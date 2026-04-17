@@ -10,6 +10,7 @@ import AdminCenter from './pages/AdminCenter'
 import HospitalSettings from './pages/HospitalSettings'
 import Login from './pages/Login'
 import Analytics from './pages/Analytics'
+import Inventory from './pages/Inventory'
 import { AlertCircle, CheckCircle, Info, X } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 
@@ -65,34 +66,31 @@ const ProtectedRoute = ({ children }) => {
 function App() {
   return (
     <Router>
-      <SanjeevniProvider>
-        <NotificationToast />
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          
-          <Route path="/*" element={
-            <ProtectedRoute>
-              <div className="flex bg-hospital-bg min-h-screen font-sans antialiased text-slate-800">
-                <Sidebar />
-                
-                <main className="flex-1 ml-64 p-8">
-                  <div className="max-w-7xl mx-auto">
-                    <Routes>
-                      <Route path="/" element={<Dashboard />} />
-                      <Route path="/transfer" element={<TransferRequest />} />
-                      <Route path="/resources" element={<ResourceExchange />} />
-                      <Route path="/ai" element={<SmartDoctor />} />
-                      <Route path="/admin" element={<AdminCenter />} />
-                      <Route path="/analytics" element={<Analytics />} />
-                      <Route path="/settings" element={<HospitalSettings />} />
-                    </Routes>
-                  </div>
-                </main>
-              </div>
-            </ProtectedRoute>
-          } />
-        </Routes>
-      </SanjeevniProvider>
+      <NotificationToast />
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        
+        <Route path="/*" element={
+          <ProtectedRoute>
+            <div className="flex bg-hospital-bg min-h-screen font-sans antialiased text-slate-800">
+              <Sidebar />
+              
+              <main className="flex-1 ml-64 p-8">
+                <div className="max-w-7xl mx-auto">
+                  <Routes>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/transfer" element={<TransferRequest />} />
+                    <Route path="/resources" element={<ResourceExchange />} />
+                    <Route path="/ai" element={<SmartDoctor />} />
+                    <Route path="/inventory" element={<Inventory />} />
+                    <Route path="/settings" element={<HospitalSettings />} />
+                  </Routes>
+                </div>
+              </main>
+            </div>
+          </ProtectedRoute>
+        } />
+      </Routes>
     </Router>
   )
 }

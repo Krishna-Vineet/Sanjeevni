@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Send, RefreshCw, MessageSquare, ShieldAlert, BarChart3, Settings, LogOut } from 'lucide-react';
+import { Home, Send, RefreshCw, MessageSquare, ShieldAlert, BarChart3, Settings, LogOut, Package } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useSanjeevni } from '../context/SanjeevniContext';
 
@@ -12,8 +12,7 @@ const Sidebar = () => {
     { icon: <Send size={20} />, label: 'Transfer Request', path: '/transfer' },
     { icon: <RefreshCw size={20} />, label: 'Resource Exchange', path: '/resources' },
     { icon: <MessageSquare size={20} />, label: 'Smart Doctor', path: '/ai' },
-    { icon: <ShieldAlert size={20} />, label: 'Admin Center', path: '/admin' },
-    { icon: <BarChart3 size={20} />, label: 'Analytics', path: '/analytics' },
+    { icon: <Package size={20} />, label: 'Fleet Inventory', path: '/inventory' },
   ];
 
   return (
@@ -65,7 +64,9 @@ const Sidebar = () => {
             <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
             <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Active Node</p>
           </div>
-          <p className="text-sm font-bold text-white truncate">{hospitalInfo.name}</p>
+          <p className="text-sm font-bold text-white truncate">
+            {hospitalInfo?.name || "Initializing..."}
+          </p>
           <button 
             onClick={logout}
             className="mt-4 w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-rose-500/10 text-rose-500 text-xs font-bold hover:bg-rose-500 hover:text-white transition-all"

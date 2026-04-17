@@ -1,24 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { LayoutDashboard, Activity, Hospital, ArrowUpRight, BarChart3, Users, Clock, Loader2 } from 'lucide-react';
+import { useSanjeevni } from '../context/SanjeevniContext';
 import { api } from '../services/api';
 
 const AdminCenter = () => {
-  const [transfers, setTransfers] = useState([]);
   const [hospitals, setHospitals] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { activeTransfers, loading: contextLoading } = useSanjeevni();
 
   useEffect(() => {
-    fetchData();
-    const interval = setInterval(fetchData, 10000);
-    return () => clearInterval(interval);
+    fetchHospitals();
   }, []);
 
-  const fetchData = async () => {
+  const fetchHospitals = async () => {
     setLoading(true);
     try {
-      const tRes = await api.admin.getTransfers();
       const hRes = await api.admin.getHospitals();
-      setTransfers(tRes.data.transfers);
       setHospitals(hRes.data.hospitals);
     } catch (err) {
       console.error(err);
@@ -90,14 +87,14 @@ const AdminCenter = () => {
         <section className="card">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-bold flex items-center gap-2"><Activity size={20} className="text-rose-500" /> Active System Transfers</h3>
-            {loading && <Loader2 size={16} className="animate-spin text-slate-400" />}
+            {contextLoading && <Loader2 size={16} className="animate-spin text-slate-400" />}
           </div>
           
           <div className="space-y-4">
-            {transfers.length === 0 ? (
+            {activeTransfers.length === 0 ? (
               <p className="py-12 text-center text-slate-400 text-sm italic">No transfers in progress across the network.</p>
             ) : (
-              transfers.map((t) => (
+              activeTransfers.map((t) => (
                 <div key={t.request_id} className="p-4 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between group hover:border-sanjeevni-200 transition-all">
                   <div className="flex items-center gap-4">
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold ${

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, Users, Battery, AlertTriangle, Check, X, ArrowRight, Loader2 } from 'lucide-react';
+import { Activity, Users, Battery, AlertTriangle, Check, X, ArrowRight, Loader2, ShieldAlert } from 'lucide-react';
 import { useSanjeevni } from '../context/SanjeevniContext';
 import { api } from '../services/api';
 
@@ -22,22 +22,35 @@ const StatCard = ({ icon: Icon, label, value, trend, color, loading }) => (
 );
 
 const Dashboard = () => {
-  const { hospitalInfo, activeTransfers, refreshData } = useSanjeevni();
+  const { hospitalInfo, activeTransfers, resourceRequests, refreshData } = useSanjeevni();
   const [incomingRequests, setIncomingRequests] = useState([]);
+  const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(false);
   const [processingId, setProcessingId] = useState(null);
 
   useEffect(() => {
     fetchIncoming();
-    const interval = setInterval(fetchIncoming, 5000);
+    fetchNews();
+    const interval = setInterval(() => {
+      fetchIncoming();
+      fetchNews();
+    }, 7000);
     return () => clearInterval(interval);
   }, []);
 
   const fetchIncoming = async () => {
     try {
-      const res = await api.hospital.getRequests(hospitalInfo.id);
-      // Filter only "broadcasted" ones where we haven't responded yet (simulated)
-      setIncomingRequests(res.data.requests.filter(r => r.status === 'broadcasted'));
+      const res = await api.hospital.getRequests();
+      setIncomingRequests(res.data.requests || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchNews = async () => {
+    try {
+      const res = await api.news.latest();
+      setNews(res.data.news || []);
     } catch (err) {
       console.error(err);
     }
@@ -48,7 +61,6 @@ const Dashboard = () => {
     try {
       await api.hospital.respond({
         request_id: requestId,
-        hospital_id: hospitalInfo.id,
         response
       });
       await refreshData();
@@ -60,83 +72,91 @@ const Dashboard = () => {
     }
   };
 
+  if (!hospitalInfo) return null;
+
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
       <header className="flex justify-between items-end">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800">Hospital Dashboard</h1>
-          <p className="text-slate-500">Real-time capacity and resource monitoring for <b>{hospitalInfo.name}</b></p>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Fleet Command</h1>
+          <p className="text-slate-500 font-medium">Monitoring Node: <b className="text-slate-900 font-black uppercase text-xs">{hospitalInfo.name} ({hospitalInfo.hospital_id})</b></p>
         </div>
         <div className="flex gap-3">
           <div className="flex flex-col items-end">
-            <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">System Status</span>
-            <div className="flex items-center gap-2 text-emerald-500 font-medium">
-              <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-              All Nodes Online
+            <span className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em]">Uplink Status</span>
+            <div className="flex items-center gap-2 text-emerald-500 font-black uppercase text-[10px] tracking-widest">
+              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-lg shadow-emerald-500/50"></span>
+              Synchronized
             </div>
           </div>
         </div>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard icon={Activity} label="ICU Bed Availability" value={`${hospitalInfo.icu_beds} / 12`} trend={-8} color="sanjeevni" />
-        <StatCard icon={Users} label="Total Admitted" value="142" trend={12} color="blue" />
-        <StatCard icon={Battery} label="Oxygen Supply" value="82%" trend={-2} color="amber" />
-        <StatCard icon={AlertTriangle} label="Emergency Index" value="High" trend={5} color="rose" />
+        <StatCard icon={Activity} label="Critical Capacity" value={`${hospitalInfo.icu_beds} Beds`} trend={-4} color="sanjeevni" />
+        <StatCard icon={Users} label="Active Transfers" value={activeTransfers.length} trend={+15} color="blue" />
+        <StatCard icon={Battery} label="O2 Optimization" value={`${hospitalInfo.oxygen_units}%`} trend={+2} color="amber" />
+        <StatCard icon={AlertTriangle} label="Elite Coverage" value="100%" trend={0} color="rose" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
-          <div className="card">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-bold">Live Incoming Requests</h3>
-              <span className="bg-rose-500 text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase animate-pulse">Live</span>
+          <div className="card bg-white shadow-xl shadow-slate-200/50 border-none rounded-3xl p-8">
+            <div className="flex justify-between items-center mb-8">
+              <div className="flex items-center gap-3">
+                 <div className="w-2 h-2 bg-rose-500 rounded-full animate-ping"></div>
+                 <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase text-sm">Code Red Priority Feed</h3>
+              </div>
+              <span className="bg-rose-500 text-white px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest">Live Scan</span>
             </div>
             
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-4">
               {incomingRequests.length === 0 ? (
-                <div className="py-12 flex flex-col items-center gap-2 text-slate-400 border-2 border-dashed border-slate-100 rounded-xl">
-                  <Activity size={32} className="opacity-20" />
-                  <p className="text-sm font-medium">No incoming emergency requests at the moment.</p>
+                <div className="py-20 flex flex-col items-center gap-4 text-slate-300 border-2 border-dashed border-slate-100 rounded-3xl">
+                  <Activity size={48} className="opacity-10" />
+                  <p className="text-xs font-black uppercase tracking-[0.3em]">No Broadcasts Detected</p>
                 </div>
               ) : (
                 incomingRequests.map((req) => (
-                  <div key={req.request_id} className="flex items-center justify-between p-5 bg-slate-50 rounded-xl border border-slate-200 relative overflow-hidden group">
-                    <div className="absolute top-0 left-0 w-1 h-full bg-rose-500"></div>
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center font-bold">
-                        <ShieldAlert size={24} />
+                  <div key={req.request_id} className="flex items-center justify-between p-6 bg-slate-50/50 rounded-3xl border border-slate-100 hover:border-rose-200 transition-all group shadow-sm">
+                    <div className="flex items-center gap-5">
+                      <div className="w-14 h-14 bg-rose-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-rose-500/20 transform group-hover:rotate-3 transition-transform">
+                        <ShieldAlert size={28} />
                       </div>
                       <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-bold text-slate-800 uppercase text-sm tracking-tight">Code Red: {req.severity}</p>
-                          <span className="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded font-bold">{req.request_id}</span>
+                        <div className="flex items-center gap-3">
+                          <p className="font-black text-slate-900 uppercase text-xs tracking-widest">Code Red: {req.severity}</p>
+                          <span className="text-[10px] bg-white border border-slate-200 text-slate-500 px-2 py-0.5 rounded-full font-bold">{req.request_id}</span>
                         </div>
-                        <p className="text-sm text-slate-500 mt-1">{req.condition}</p>
-                        <p className="text-xs text-slate-400 mt-1 uppercase font-bold tracking-widest">Needs: {req.required_resources.join(', ')}</p>
+                        <p className="text-sm text-slate-600 font-bold mt-1 line-clamp-1">{req.condition}</p>
+                        <div className="flex gap-2 mt-2">
+                          {req.required_resources.map(res => (
+                             <span key={res} className="text-[9px] bg-slate-200 text-slate-500 px-2 py-0.5 rounded-md font-black uppercase tracking-tighter">{res}</span>
+                          ))}
+                        </div>
                       </div>
                     </div>
                     
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 pl-4">
                       {processingId === req.request_id ? (
-                        <div className="flex items-center gap-2 text-sanjeevni-600 font-bold px-4">
-                          <Loader2 size={18} className="animate-spin" /> Processing
+                        <div className="flex items-center gap-2 text-rose-500 font-black text-[10px] uppercase px-4">
+                          <Loader2 size={16} className="animate-spin" /> Verifying...
                         </div>
                       ) : (
-                        <>
-                          <button 
+                        <div className="flex items-center gap-2">
+                           <button 
                             onClick={() => handleResponse(req.request_id, 'reject')}
-                            className="p-3 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
+                            className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
                           >
                             <X size={20} />
                           </button>
                           <button 
                             onClick={() => handleResponse(req.request_id, 'accept')}
-                            className="bg-emerald-500 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-emerald-600 hover:shadow-lg hover:shadow-emerald-500/20 transition-all"
+                            className="bg-slate-900 text-white h-12 px-6 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black hover:shadow-2xl transition-all active:scale-95"
                           >
-                            <Check size={20} /> Accept
+                            Accept
                           </button>
-                        </>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -145,60 +165,81 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="card">
-            <h3 className="text-lg font-bold mb-4">ML Surge Prediction</h3>
-            <div className="h-64 bg-slate-50 rounded-xl flex flex-col items-center justify-center border-2 border-dashed border-slate-200 p-8 text-center">
-               <div className="relative w-full h-32 overflow-hidden mb-4 opacity-30">
-                  <div className="absolute inset-0 flex items-end justify-between px-4">
-                    {[40, 60, 45, 80, 50, 90, 70, 85].map((h, i) => (
-                      <div key={i} className="w-8 bg-sanjeevni-500 rounded-t-lg" style={{ height: `${h}%` }}></div>
-                    ))}
-                  </div>
-               </div>
-              <p className="text-slate-500 font-medium">Predicted Surge: <span className="text-emerald-600">+22% in next 6h</span></p>
-              <p className="text-xs text-slate-400 mt-1 max-w-xs">AI analysis based on historical trend and nearby hospital occupancy. Pre-emptive resource allocation recommended.</p>
+          <div className="card rounded-3xl p-8 border-none shadow-xl shadow-slate-200/50">
+            <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase text-sm mb-6 flex items-center gap-2">
+              <Activity className="text-sanjeevni-500" size={18} /> Resource Exchange Node
+            </h3>
+            <div className="p-8 bg-slate-50 rounded-3xl flex flex-col items-center justify-center border border-slate-100 text-center gap-4">
+              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-sanjeevni-500 shadow-sm">
+                 <Battery size={32} />
+              </div>
+              <div>
+                <p className="text-slate-800 font-black text-sm uppercase tracking-tight">
+                  {resourceRequests.filter(r => r.status === 'pending' && r.requesting_hospital_id !== hospitalInfo.hospital_id).length} Broadcasts Active
+                </p>
+                <p className="text-xs text-slate-400 font-medium max-w-xs mx-auto mt-1">Directly fulfill peer resource needs or broadcast your own requirements to the elite network.</p>
+              </div>
+              <a href="/resources" className="w-full">
+                <button className="w-full px-8 py-4 bg-white border border-slate-200 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all shadow-sm">Enter Exchange Hub</button>
+              </a>
             </div>
           </div>
         </div>
 
         <div className="space-y-6">
-          <div className="card bg-sanjeevni-900 text-white border-0 relative overflow-hidden">
-            <div className="absolute -right-8 -top-8 w-24 h-24 bg-white/5 rounded-full"></div>
-            <h3 className="text-lg font-bold mb-2">Inventory Advisor (ML)</h3>
-            <p className="text-sanjeevni-200 text-sm mb-6">Based on predicted surge, your hospital might face an Oxygen shortage.</p>
+          <div className="card bg-slate-900 text-white border-0 rounded-3xl p-8 relative overflow-hidden shadow-2xl">
+            <div className="absolute -right-8 -top-8 w-24 h-24 bg-white/5 rounded-full blur-2xl"></div>
+            <h3 className="text-xl font-black mb-6 tracking-tight uppercase text-sm flex items-center gap-2">
+                <ShieldAlert size={18} /> Network News
+            </h3>
             <div className="space-y-4">
-              <div className="bg-white/10 p-4 rounded-xl border border-white/10 group hover:bg-white/15 transition-all cursor-pointer">
-                <p className="text-xs text-sanjeevni-300 font-medium uppercase mb-1">Critical Insight</p>
-                <p className="font-medium text-white mb-3 leading-tight">Request 20 Oxygen Cylinders from Medanta - The Medicity (Surplus detected)</p>
-                <div className="flex items-center gap-2 text-sanjeevni-400 text-xs font-bold uppercase tracking-wider group-hover:gap-3 transition-all">
-                  Run Resource Bot <ArrowRight size={14} />
-                </div>
-              </div>
+              {news.length === 0 ? (
+                <p className="text-slate-500 text-xs italic">Awaiting critical broadcasts...</p>
+              ) : (
+                news.map((item, i) => (
+                  <div key={i} className={`p-5 rounded-2xl border ${item.is_external ? 'bg-white/5 border-white/5' : 'bg-sanjeevni-500/10 border-sanjeevni-500/20'} transition-all hover:bg-white/10`}>
+                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mb-2">{item.source}</p>
+                    <p className="font-black text-sm leading-tight mb-2">{item.title}</p>
+                    <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">{item.content}</p>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
-          <div className="card">
-            <h3 className="text-lg font-bold mb-4">Network Overview</h3>
-            <div className="space-y-4">
-              {activeTransfers.slice(0, 3).map((t) => (
-                <div key={t.request_id} className="flex flex-col gap-1 py-1">
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-slate-700 font-medium">{t.request_id}</span>
-                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded uppercase ${
-                      t.status === 'accepted' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
-                    }`}>
-                      {t.status}
+          <div className="card rounded-3xl p-8 border-none shadow-xl shadow-slate-200/50">
+            <div className="flex justify-between items-center mb-6">
+               <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest">Active Logistics</h3>
+               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-glow"></div>
+            </div>
+            <div className="space-y-5">
+              {[
+                ...activeTransfers.filter(t => t.status === 'confirmed').map(t => ({ id: t.request_id, label: 'Patient Transfer', status: 'In Transit', color: 'emerald' })),
+                ...resourceRequests.filter(r => r.status === 'accepted').map(r => ({ id: r.id, label: `${r.resource_type} Supply`, status: 'Moving', color: 'blue' }))
+              ].slice(0, 5).map((log) => (
+                <div key={log.id} className="group cursor-pointer">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest">{log.id}</span>
+                    <span className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter bg-emerald-100 text-emerald-600`}>
+                      {log.status}
                     </span>
                   </div>
-                  <div className="w-full bg-slate-100 h-1 rounded-full overflow-hidden mt-1">
-                    <div className={`h-full transition-all duration-1000 ${t.status === 'accepted' ? 'w-full bg-emerald-500' : 'w-1/2 bg-amber-500 animate-pulse'}`}></div>
+                  <div className="flex items-center gap-2 mb-2">
+                     <p className="text-[11px] font-bold text-slate-700">{log.label}</p>
+                  </div>
+                  <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                    <div className={`h-full transition-all duration-1000 w-full bg-emerald-500 shadow-lg shadow-emerald-500/30`}></div>
                   </div>
                 </div>
               ))}
-              {activeTransfers.length === 0 && <p className="text-xs text-slate-400 italic">No network activity</p>}
-              <button className="w-full mt-2 py-2 text-xs font-bold text-sanjeevni-600 uppercase tracking-widest hover:bg-sanjeevni-50 rounded-lg transition-all">
-                View Full Network Log
-              </button>
+              {(activeTransfers.filter(t => t.status === 'confirmed').length === 0 && resourceRequests.filter(r => r.status === 'accepted').length === 0) && (
+                <p className="text-xs text-slate-300 font-bold text-center italic py-4 tracking-wider">LOGISTICS SILENT</p>
+              )}
+              <a href="/resources" className="block w-full">
+                <button className="w-full mt-4 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] hover:text-slate-900 hover:bg-slate-50 rounded-2xl transition-all border border-transparent hover:border-slate-100">
+                  Detailed Manifest
+                </button>
+              </a>
             </div>
           </div>
         </div>

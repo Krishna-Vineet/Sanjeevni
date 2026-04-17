@@ -4,27 +4,18 @@ import { api } from '../services/api';
 const SanjeevniContext = createContext();
 
 export const SanjeevniProvider = ({ children }) => {
-  const [hospitalInfo, setHospitalInfo] = useState({
-    id: 'H1',
-    name: 'Fortis Hospital Gurgaon',
-    icu_beds: 80,
-    general_beds: 320,
+  const [hospitalInfo, setHospitalInfo] = useState(() => {
+    const saved = localStorage.getItem('sanjeevni_hospital');
+    return saved ? JSON.parse(saved) : null;
   });
-
   const [activeTransfers, setActiveTransfers] = useState([]);
+  const [resourceRequests, setResourceRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [notifications, setNotifications] = useState([]);
   
   // Auth State
   const [token, setToken] = useState(localStorage.getItem('sanjeevni_token'));
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('sanjeevni_token'));
-
-  useEffect(() => {
-    const savedHospital = localStorage.getItem('sanjeevni_hospital');
-    if (savedHospital) {
-      setHospitalInfo(JSON.parse(savedHospital));
-    }
-  }, []);
 
   const addNotification = (message, type = 'info') => {
     const id = Date.now();
@@ -47,12 +38,12 @@ export const SanjeevniProvider = ({ children }) => {
       localStorage.setItem('sanjeevni_token', token);
       localStorage.setItem('sanjeevni_hospital', JSON.stringify(hospital));
       
-      addNotification(`Welcome, ${hospital.name}`, 'success');
+      addNotification(`Access Granted: ${hospital.name}`, 'success');
       return { success: true };
     } catch (err) {
-      console.error("Login failed", err);
-      addNotification("Login failed. Check credentials.", 'error');
-      return { success: false, error: "Invalid credentials" };
+      const msg = err.response?.data?.message || "Invalid credentials. Access Denied.";
+      addNotification(msg, 'error');
+      return { success: false, error: msg };
     } finally {
       setLoading(false);
     }
@@ -67,29 +58,34 @@ export const SanjeevniProvider = ({ children }) => {
     } finally {
       setToken(null);
       setIsAuthenticated(false);
+      setHospitalInfo(null);
       localStorage.removeItem('sanjeevni_token');
       localStorage.removeItem('sanjeevni_hospital');
       setLoading(false);
-      addNotification("Signed out safely", 'info');
+      addNotification("Logged out of Sanjeevni Network", 'info');
     }
   };
 
   const refreshData = async () => {
     if (!isAuthenticated) return;
     try {
-      const res = await api.admin.getTransfers();
+      // 1. Fetch Patient Transfers
+      const res = await api.hospital.getRequests();
+      const currentRequests = res.data.requests || [];
       
-      // Notify if a new transfer is accepted compared to current state
-      res.data.transfers.forEach(t => {
-        const existing = activeTransfers.find(et => et.request_id === t.request_id);
-        if (t.status === 'accepted' && (!existing || existing.status !== 'accepted')) {
-          addNotification(`Transfer ${t.request_id} has been ACCEPTED!`, 'success');
+      currentRequests.forEach(req => {
+        const existing = activeTransfers.find(et => et.request_id === req.request_id);
+        if (!existing && req.severity === 'critical') {
+          addNotification(`CRITICAL: New Code Red Broadcast received!`, 'warning');
         }
       });
+      setActiveTransfers(currentRequests);
 
-      setActiveTransfers(res.data.transfers);
+      // 2. Fetch Resource Exchanges
+      const resourceRes = await api.resource.getAll();
+      setResourceRequests(resourceRes.data.requests || []);
     } catch (err) {
-      console.error("Failed to refresh data", err);
+      console.error("Failed to refresh network data", err);
     }
   };
 
@@ -99,12 +95,13 @@ export const SanjeevniProvider = ({ children }) => {
       const interval = setInterval(refreshData, 10000);
       return () => clearInterval(interval);
     }
-  }, [isAuthenticated, activeTransfers]); // Added activeTransfers to comparison logic
+  }, [isAuthenticated]);
 
   return (
     <SanjeevniContext.Provider value={{ 
       hospitalInfo, 
       activeTransfers, 
+      resourceRequests,
       loading, 
       isAuthenticated,
       notifications,

@@ -6,8 +6,8 @@ import { useNavigate, Navigate } from 'react-router-dom';
 const Login = () => {
   const { login, isAuthenticated, loading } = useSanjeevni();
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    hospital_id: 'H1',
+    const [formData, setFormData] = useState({
+    hospital_id: '',
     password: ''
   });
   const [error, setError] = useState('');
@@ -18,8 +18,8 @@ const Login = () => {
     e.preventDefault();
     setError('');
     
-    if (!formData.password) {
-      setError('Please enter your access key');
+    if (!formData.hospital_id || !formData.password) {
+      setError('Hospital ID and Password are required');
       return;
     }
 
@@ -51,31 +51,26 @@ const Login = () => {
         <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
           <div className="mb-8">
             <h2 className="text-xl font-bold text-white">Node Authentication</h2>
-            <p className="text-slate-400 text-sm mt-1">Authorized health workers only.</p>
+            <p className="text-slate-400 text-sm mt-1">Sanjeevni Elite v2.0 Network Access.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
-                <Hospital size={14} /> Hospital Identifier
+                <Hospital size={14} /> Hospital ID
               </label>
-              <select 
+              <input 
+                type="text" 
+                placeholder="e.g. MEDANTA01"
                 value={formData.hospital_id}
-                onChange={(e) => setFormData({...formData, hospital_id: e.target.value})}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:ring-2 focus:ring-sanjeevni-500/50 transition-all"
-              >
-                <option value="H1" className="bg-slate-900">H1 - Fortis Hospital Gurgaon</option>
-                <option value="H2" className="bg-slate-900">H2 - Medanta - The Medicity</option>
-                <option value="H3" className="bg-slate-900">H3 - Artemis Hospital</option>
-                <option value="H4" className="bg-slate-900">H4 - Max Super Speciality Hospital</option>
-                <option value="H5" className="bg-slate-900">H5 - CK Birla Hospital</option>
-                <option value="H6" className="bg-slate-900">H6 - Alchemist Hospital</option>
-              </select>
+                onChange={(e) => setFormData({...formData, hospital_id: e.target.value.toUpperCase()})}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:ring-2 focus:ring-sanjeevni-500/50 transition-all placeholder:text-slate-600"
+              />
             </div>
 
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
-                <Lock size={14} /> Access Key
+                <Lock size={14} /> Access Password
               </label>
               <input 
                 type="password" 

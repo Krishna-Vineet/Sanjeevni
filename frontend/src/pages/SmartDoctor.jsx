@@ -26,11 +26,8 @@ const SmartDoctor = () => {
     setLoading(true);
 
     try {
-      // For the mock, we simulate parsing symptoms/vitals from the single input
       const res = await api.ai.smartDoctor({
-        symptoms: input,
-        vitals: input, // Simplified for the single box chat
-        notes: ""
+        input: input
       });
 
       const botMsg = { 
@@ -42,7 +39,8 @@ const SmartDoctor = () => {
       setMessages(prev => [...prev, botMsg]);
     } catch (err) {
       console.error(err);
-      setMessages(prev => [...prev, { id: Date.now() + 1, type: 'bot', text: "Sorry, I'm having trouble connecting to the medical AI engine.", status: 'error' }]);
+      const errorMsg = err.response?.data?.message || "Medical AI engine is currently over capacity. Please follow standard emergency protocols.";
+      setMessages(prev => [...prev, { id: Date.now() + 1, type: 'bot', text: errorMsg, status: 'error' }]);
     } finally {
       setLoading(false);
     }

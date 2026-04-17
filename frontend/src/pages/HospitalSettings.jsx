@@ -27,7 +27,7 @@ const HospitalSettings = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await api.hospital.updateCapacity(hospitalInfo.id, capacity);
+      await api.hospital.updateCapacity(hospitalInfo.hospital_id, capacity);
       setHospitalInfo({ ...hospitalInfo, icu_beds: capacity.icu_beds, general_beds: capacity.general_beds });
       triggerSuccess();
     } catch (err) {
@@ -41,7 +41,7 @@ const HospitalSettings = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await api.hospital.updateSettings(hospitalInfo.id, settings);
+      await api.hospital.updateSettings(hospitalInfo.hospital_id, settings);
       triggerSuccess();
     } catch (err) {
       console.error(err);
