@@ -152,7 +152,7 @@ const AdminCenter = () => {
           <div className="mt-8 p-4 bg-slate-800 rounded-2xl text-white">
             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Network Insights</h4>
             <p className="text-sm font-medium leading-relaxed">
-              H3 (Metro Health) is nearing capacity. AI dispatcher is now prioritizing H2 (City Memorial) for non-critical cases to balance network load.
+              H3 (Artemis Hospital) is nearing capacity. AI dispatcher is now prioritizing H4 (Max Super Speciality Hospital) for non-critical cases to balance network load.
             </p>
           </div>
         </section>

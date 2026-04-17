@@ -169,7 +169,7 @@ const Dashboard = () => {
             <div className="space-y-4">
               <div className="bg-white/10 p-4 rounded-xl border border-white/10 group hover:bg-white/15 transition-all cursor-pointer">
                 <p className="text-xs text-sanjeevni-300 font-medium uppercase mb-1">Critical Insight</p>
-                <p className="font-medium text-white mb-3 leading-tight">Request 20 Oxygen Cylinders from Metro Health (Surplus detected)</p>
+                <p className="font-medium text-white mb-3 leading-tight">Request 20 Oxygen Cylinders from Medanta - The Medicity (Surplus detected)</p>
                 <div className="flex items-center gap-2 text-sanjeevni-400 text-xs font-bold uppercase tracking-wider group-hover:gap-3 transition-all">
                   Run Resource Bot <ArrowRight size={14} />
                 </div>

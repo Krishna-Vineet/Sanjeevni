@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const BASE_URL = 'http://localhost:8000/api';
-const USE_MOCKS = true; // Toggle this when the real backend is ready
+const USE_MOCKS = false; // Toggle this when the real backend is ready
 
 // --- MOCK DATA & PERSISTENCE ---
 const getMockData = (key, defaultVal) => {
@@ -15,10 +15,12 @@ const saveMockData = (key, data) => {
 
 // Initial Mocks
 const INITIAL_HOSPITALS = [
-  { id: 'H1', name: 'Sanjeevni Central', icu_beds: 5, general_beds: 20, load_factor: 0.6, location: { lat: 28.61, lng: 77.23 } },
-  { id: 'H2', name: 'City Memorial', icu_beds: 2, general_beds: 10, load_factor: 0.4, location: { lat: 28.62, lng: 77.21 }, distance_km: 1.2, arrival_time: 8 },
-  { id: 'H3', name: 'Metro Health', icu_beds: 8, general_beds: 40, load_factor: 0.8, location: { lat: 28.60, lng: 77.25 }, distance_km: 3.5, arrival_time: 15 },
-  { id: 'H4', name: 'St.arlight Clinic', icu_beds: 0, general_beds: 5, load_factor: 0.2, location: { lat: 28.63, lng: 77.20 }, distance_km: 5.1, arrival_time: 22 },
+  { id: 'H1', name: 'Fortis Hospital Gurgaon', icu_beds: 80, general_beds: 320, load_factor: 0.75, location: { lat: 28.4595, lng: 77.0745 } },
+  { id: 'H2', name: 'Medanta - The Medicity', icu_beds: 200, general_beds: 1400, load_factor: 0.85, location: { lat: 28.4478, lng: 77.0449 }, distance_km: 8.2, arrival_time: 12 },
+  { id: 'H3', name: 'Artemis Hospital', icu_beds: 120, general_beds: 630, load_factor: 0.70, location: { lat: 28.4328, lng: 77.0910 }, distance_km: 6.8, arrival_time: 10 },
+  { id: 'H4', name: 'Max Super Speciality Hospital', icu_beds: 25, general_beds: 75, load_factor: 0.65, location: { lat: 28.4700, lng: 77.0870 }, distance_km: 3.1, arrival_time: 6 },
+  { id: 'H5', name: 'CK Birla Hospital', icu_beds: 15, general_beds: 55, load_factor: 0.55, location: { lat: 28.4250, lng: 77.0800 }, distance_km: 9.5, arrival_time: 15 },
+  { id: 'H6', name: 'Alchemist Hospital', icu_beds: 10, general_beds: 40, load_factor: 0.45, location: { lat: 28.4600, lng: 77.0600 }, distance_km: 4.2, arrival_time: 8 },
 ];
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -51,7 +53,6 @@ export const api = {
 
   // --- TRANSFER APIS ---
   transfer: {
-
     create: async (data) => {
       if (USE_MOCKS) {
         await sleep(800);
@@ -75,7 +76,7 @@ export const api = {
         const hospitals = INITIAL_HOSPITALS.filter(h => h.id !== 'H1').map(h => ({
           hospital_id: h.id,
           name: h.name,
-          score: Math.random() * 0.4 + 0.6, // 0.6 to 1.0
+          score: Math.random() * 0.4 + 0.6,
           distance_km: h.distance_km,
           eta_minutes: h.arrival_time,
           specialization_match: true,
@@ -93,7 +94,6 @@ export const api = {
         const requests = getMockData('requests', []);
         const updated = requests.map(r => {
           if (r.request_id === data.request_id) {
-            // Simulate an auto-accept from one of the hospitals after a short delay
             setTimeout(() => {
               const reqs = getMockData('requests', []);
               const innerUpdated = reqs.map(inner => {
@@ -164,7 +164,6 @@ export const api = {
       if (USE_MOCKS) {
         await sleep(600);
         const requests = getMockData('requests', []);
-        // For simulation, we'll show requests that were broadcasted
         return { data: { requests: requests.filter(r => r.status === 'broadcasted' || r.status === 'created') } };
       }
       return axios.get(`${BASE_URL}/hospital/${hospitalId}/requests`);
@@ -193,7 +192,12 @@ export const api = {
       if (USE_MOCKS) {
         await sleep(700);
         const resRequests = getMockData('resource_requests', []);
-        const newReq = { ...data, resource_request_id: `RR${Date.now()}`, status: 'pending', created_at: new Date().toISOString() };
+        const newReq = { 
+          ...data, 
+          resource_request_id: `RR${Date.now()}`, 
+          status: 'pending', 
+          created_at: new Date().toISOString() 
+        };
         saveMockData('resource_requests', [...resRequests, newReq]);
         return { data: { resource_request_id: newReq.resource_request_id, status: 'created' } };
       }

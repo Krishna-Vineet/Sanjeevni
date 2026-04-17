@@ -6,9 +6,9 @@ const SanjeevniContext = createContext();
 export const SanjeevniProvider = ({ children }) => {
   const [hospitalInfo, setHospitalInfo] = useState({
     id: 'H1',
-    name: 'Sanjeevni Central',
-    icu_beds: 5,
-    general_beds: 20,
+    name: 'Fortis Hospital Gurgaon',
+    icu_beds: 80,
+    general_beds: 320,
   });
 
   const [activeTransfers, setActiveTransfers] = useState([]);

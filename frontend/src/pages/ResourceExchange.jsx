@@ -160,7 +160,7 @@ const ResourceExchange = () => {
                           </span>
                         </div>
                         <p className="text-sm font-medium text-slate-500">Need: <b>{req.quantity} Units</b> • Reported 2h ago</p>
-                        <p className="text-xs text-sanjeevni-600 mt-1 uppercase font-bold tracking-widest">{req.hospital_id === hospitalInfo.id ? 'Your Request' : 'City Memorial (1.2km away)'}</p>
+                        <p className="text-xs text-sanjeevni-600 mt-1 uppercase font-bold tracking-widest">{req.hospital_id === hospitalInfo.id ? 'Your Request' : 'Medanta - The Medicity (8.2km away)'}</p>
                       </div>
                     </div>
                     
@@ -224,17 +224,17 @@ const ResourceExchange = () => {
             <div className="p-6 space-y-6">
               <div className="flex gap-4 relative">
                 <div className="absolute left-[9px] top-6 w-[2px] h-8 bg-slate-200"></div>
-                <div className="w-5 h-5 bg-sanjeevni-500 rounded-full ring-4 ring-sanjeevni-50 flex-shrink-0"></div>
+                <div className="w-5 h-5 bg-sanjeevni-500 rounded-full ring-4 ring-sanjeevni-50 shrink-0"></div>
                 <div>
                   <p className="text-xs font-bold text-slate-800">Ambulance #402</p>
                   <p className="text-[10px] text-slate-500">Delivering Oxygen • 2 mins away</p>
                 </div>
               </div>
               <div className="flex gap-4">
-                <div className="w-5 h-5 bg-slate-200 rounded-full flex-shrink-0"></div>
+                <div className="w-5 h-5 bg-slate-200 rounded-full shrink-0"></div>
                 <div className="opacity-50">
                   <p className="text-xs font-bold text-slate-800">Pending Pickup</p>
-                  <p className="text-[10px] text-slate-500">Blood Unit O- • Metro Health</p>
+                  <p className="text-[10px] text-slate-500">Blood Unit O- • Artemis Hospital</p>
                 </div>
               </div>
             </div>

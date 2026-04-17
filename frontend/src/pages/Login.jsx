@@ -64,10 +64,12 @@ const Login = () => {
                 onChange={(e) => setFormData({...formData, hospital_id: e.target.value})}
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:ring-2 focus:ring-sanjeevni-500/50 transition-all"
               >
-                <option value="H1" className="bg-slate-900">H1 - Sanjeevni Central</option>
-                <option value="H2" className="bg-slate-900">H2 - City Memorial</option>
-                <option value="H3" className="bg-slate-900">H3 - Metro Health</option>
-                <option value="H4" className="bg-slate-900">H4 - Starlight Clinic</option>
+                <option value="H1" className="bg-slate-900">H1 - Fortis Hospital Gurgaon</option>
+                <option value="H2" className="bg-slate-900">H2 - Medanta - The Medicity</option>
+                <option value="H3" className="bg-slate-900">H3 - Artemis Hospital</option>
+                <option value="H4" className="bg-slate-900">H4 - Max Super Speciality Hospital</option>
+                <option value="H5" className="bg-slate-900">H5 - CK Birla Hospital</option>
+                <option value="H6" className="bg-slate-900">H6 - Alchemist Hospital</option>
               </select>
             </div>
 

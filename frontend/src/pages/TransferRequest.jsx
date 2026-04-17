@@ -206,7 +206,7 @@ const TransferRequest = () => {
               <button onClick={() => setStep(1)} className="flex-1 py-4 font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">Back</button>
               <button 
                 onClick={handleBroadcast} 
-                className="btn-primary flex-[2] py-4 text-lg bg-emergency hover:bg-emergency-dark flex items-center justify-center gap-2"
+                className="btn-primary flex-2 py-4 text-lg bg-emergency hover:bg-emergency-dark flex items-center justify-center gap-2"
               >
                 <ShieldAlert size={20} /> Broadcast Code Red
               </button>

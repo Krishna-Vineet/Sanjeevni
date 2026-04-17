@@ -118,19 +118,19 @@ const Analytics = () => {
             <h3 className="text-lg font-bold mb-6">Optimization Insights</h3>
             <div className="space-y-6">
               <div className="flex gap-4 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
-                <div className="w-10 h-10 bg-emerald-500 text-white rounded-xl flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 bg-emerald-500 text-white rounded-xl flex items-center justify-center shrink-0">
                   <ArrowUpRight size={20} />
                 </div>
                 <div>
                   <p className="text-xs font-bold text-emerald-800 uppercase tracking-widest">Surge Ready</p>
-                  <p className="text-sm text-emerald-700 font-medium mt-1">Resource allocation to H2 successfully prevented a local oxygen shortage at 14:00.</p>
+                  <p className="text-sm text-emerald-700 font-medium mt-1">Resource allocation to Medanta successfully prevented a local oxygen shortage at 14:00.</p>
                 </div>
               </div>
               
               <div className="space-y-4">
                 <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Upcoming Challenges</h4>
                 <p className="text-sm text-slate-600 leading-relaxed font-medium">
-                  Traffic congestion predicted on NH-8 may increase ETA for ambulances from Metro Health by <span className="text-rose-600 font-black">+4 mins</span>.
+                  Traffic congestion predicted on NH-8 may increase ETA for ambulances from Artemis Hospital by <span className="text-rose-600 font-black">+4 mins</span>.
                 </p>
               </div>
 
@@ -138,7 +138,7 @@ const Analytics = () => {
                 <div className="absolute top-0 right-0 w-16 h-16 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 transition-transform duration-700 group-hover:scale-150"></div>
                 <h5 className="text-xs font-bold text-sanjeevni-400 uppercase tracking-widest mb-2">Network Recommendation</h5>
                 <p className="text-sm font-medium leading-relaxed">
-                  Shift 2 Ventilators from H1 to H3 temporarily based on predictive surge in West Zone.
+                  Shift 2 Ventilators from Fortis Hospital Gurgaon to Artemis Hospital temporarily based on predictive surge in West Zone.
                 </p>
                 <button className="mt-4 w-full py-3 bg-white text-slate-900 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-sanjeevni-50 transition-all">
                   Apply Strategy

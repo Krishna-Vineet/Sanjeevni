@@ -68,7 +68,7 @@ const SmartDoctor = () => {
           {messages.map((msg) => (
             <div key={msg.id} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`flex gap-4 max-w-[80%] ${msg.type === 'user' ? 'flex-row-reverse' : ''}`}>
-                <div className={`w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center shadow-sm ${
+                <div className={`w-10 h-10 rounded-xl shrink-0 flex items-center justify-center shadow-sm ${
                   msg.type === 'user' ? 'bg-slate-800 text-white' : 'bg-white text-sanjeevni-600'
                 }`}>
                   {msg.type === 'user' ? <User size={20} /> : <Bot size={20} />}

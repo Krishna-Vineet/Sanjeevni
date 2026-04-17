@@ -18,7 +18,7 @@ const NotificationToast = () => {
   const { notifications } = useSanjeevni();
   
   return (
-    <div className="fixed top-6 right-6 z-[100] space-y-3 w-80">
+    <div className="fixed top-6 right-6 z-100 space-y-3 w-80">
       <AnimatePresence>
         {notifications.map((n) => (
           <motion.div
