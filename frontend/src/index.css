@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@theme {
+  --color-sanjeevni-50: #f0fdf9;
+  --color-sanjeevni-100: #ccfbf1;
+  --color-sanjeevni-200: #99f6e4;
+  --color-sanjeevni-300: #5eead4;
+  --color-sanjeevni-400: #2dd4bf;
+  --color-sanjeevni-500: #14b8a6;
+  --color-sanjeevni-600: #0d9488;
+  --color-sanjeevni-700: #0f766e;
+  --color-sanjeevni-800: #115e59;
+  --color-sanjeevni-900: #134e4a;
+
+  --color-emergency: #ef4444;
+  --color-emergency-dark: #b91c1c;
+
+  --color-hospital-bg: #f8fafc;
+  --color-hospital-card: #ffffff;
+  --color-hospital-sidebar: #0f172a;
+
+  --font-sans: "Inter", "system-ui", sans-serif;
+
+  --shadow-premium: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 
+                   0 8px 10px -6px rgba(0, 0, 0, 0.05);
+
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.8;
+    }
+  }
+}
+
+:root {
+  background-color: var(--color-hospital-bg);
+  color: #0f172a;
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-sanjeevni-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-sanjeevni-600 transition-all shadow-sm cursor-pointer;
+  }
+  .card {
+    @apply bg-white border border-slate-100 rounded-xl shadow-premium p-6;
+  }
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/20;
+  }
+}
