@@ -325,7 +325,7 @@ const TransferRequest = () => {
                       </div>
                       <div>
                         <p className="text-emerald-900 font-black text-xl tracking-tighter">Transfer Live</p>
-                        <p className="text-emerald-700 font-bold uppercase text-[10px] tracking-widest mt-1 opacity-80">Logistics finalized with node</p>
+                        <p className="text-emerald-700 font-bold uppercase text-[10px] tracking-widest mt-1 opacity-80">Ambulance arriving soon!</p>
                       </div>
                    </div>
                    <button onClick={() => setStep(1)} className="w-full py-6 bg-slate-900 text-white rounded-3xl font-black tracking-[0.2em] uppercase text-xs hover:bg-black transition-all shadow-2xl shadow-slate-900/20">Return to Operations</button>
