@@ -9,6 +9,7 @@ const Inventory = () => {
   const [prediction, setPrediction] = useState(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [showPrediction, setShowPrediction] = useState(true);
 
   useEffect(() => {
     fetchInventory();
@@ -73,8 +74,8 @@ const Inventory = () => {
   );
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 animate-in fade-in duration-500">
-      <div className="lg:col-span-3 space-y-8">
+    <div className={`grid grid-cols-1 ${showPrediction ? 'lg:grid-cols-10' : 'lg:grid-cols-1'} gap-8 animate-in fade-in duration-500`}>
+      <div className={`${showPrediction ? 'lg:col-span-6' : 'lg:col-span-1'} space-y-8`}>
         <header className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
@@ -83,6 +84,13 @@ const Inventory = () => {
             <p className="text-slate-500 font-medium">Real-time asset management for <span className="text-slate-900 font-black">Elite Operations</span></p>
           </div>
           <div className="flex gap-4">
+             <button 
+              onClick={() => setShowPrediction(!showPrediction)} 
+              className={`p-4 rounded-2xl border transition-all ${showPrediction ? 'bg-indigo-50 border-indigo-100 text-indigo-500 shadow-inner' : 'bg-white border-slate-200 text-slate-400'}`}
+              title={showPrediction ? "Hide ML Analytics" : "Show ML Analytics"}
+             >
+                <TrendingUp size={16} />
+             </button>
              <button onClick={addItem} className="bg-white border border-slate-200 p-4 rounded-2xl flex items-center gap-2 font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all text-slate-600 shadow-sm">
                 <Plus size={16} /> Add Asset
              </button>
@@ -104,8 +112,9 @@ const Inventory = () => {
                 <tr className="border-b border-slate-50">
                   <th className="text-left py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest px-4">Asset Name</th>
                   <th className="text-left py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest px-4">Category</th>
-                  <th className="text-left py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest px-4">In-Stock</th>
-                  <th className="text-left py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest px-4">Unit</th>
+                  <th className="text-left py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest px-4">Batch</th>
+                  <th className="text-left py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest px-4">Expiry</th>
+                  <th className="text-left py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest px-4">Stock</th>
                   <th className="text-right py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest px-4 italic">Action</th>
                 </tr>
               </thead>
@@ -133,20 +142,38 @@ const Inventory = () => {
                       </select>
                     </td>
                     <td className="py-4 px-4">
-                        <input 
-                          type="number" 
-                          value={item.quantity} 
-                          onChange={(e) => updateItem(idx, 'quantity', parseInt(e.target.value) || 0)}
-                          className="bg-slate-100/50 px-3 py-1.5 rounded-lg font-black text-slate-900 outline-none w-20"
-                        />
+                      <input 
+                        type="text" 
+                        value={item.batch_number || ''} 
+                        onChange={(e) => updateItem(idx, 'batch_number', e.target.value)}
+                        placeholder="Batch"
+                        className="bg-transparent font-black text-slate-400 outline-none w-20 text-[10px]"
+                      />
                     </td>
                     <td className="py-4 px-4">
-                       <input 
-                        type="text" 
-                        value={item.unit} 
-                        onChange={(e) => updateItem(idx, 'unit', e.target.value)}
-                        className="bg-transparent font-medium text-slate-400 outline-none w-20 text-xs"
+                      <input 
+                        type="date" 
+                        value={item.expiry_date ? new Date(item.expiry_date).toISOString().split('T')[0] : ''} 
+                        onChange={(e) => updateItem(idx, 'expiry_date', e.target.value)}
+                        className={`bg-transparent text-[10px] font-bold outline-none ${
+                           item.expiry_date && (new Date(item.expiry_date) - new Date()) / (1000 * 60 * 60 * 24) < 30 ? 'text-rose-500' : 'text-slate-500'
+                        }`}
                       />
+                    </td>
+                    <td className="py-4 px-4">
+                        <div className="flex flex-col">
+                          <input 
+                            type="number" 
+                            value={item.quantity} 
+                            onChange={(e) => updateItem(idx, 'quantity', parseInt(e.target.value) || 0)}
+                            className={`bg-slate-100/50 px-3 py-1.5 rounded-lg font-black outline-none w-20 ${
+                               item.quantity <= (item.min_threshold || 10) ? 'text-rose-600 border border-rose-100 bg-rose-50' : 'text-slate-900'
+                            }`}
+                          />
+                          <span className="text-[8px] font-black text-slate-400 mt-1 uppercase tracking-tighter">
+                            {item.unit || 'units'}
+                          </span>
+                        </div>
                     </td>
                     <td className="py-4 px-4 text-right">
                        <button onClick={() => removeItem(idx)} className="text-slate-200 hover:text-rose-500 transition-colors p-2 rounded-lg hover:bg-rose-50">
@@ -171,8 +198,9 @@ const Inventory = () => {
         </div>
       </div>
 
-      <div className="lg:col-span-1 space-y-6">
-        <div className="card border-none bg-slate-900 text-white p-8 rounded-[40px] relative overflow-hidden shadow-2xl">
+      {showPrediction && (
+        <div className="lg:col-span-4 space-y-6 animate-in slide-in-from-right duration-500">
+          <div className="card border-none bg-slate-900 text-white p-8 rounded-[40px] relative overflow-hidden shadow-2xl">
           <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/20 rounded-full blur-3xl -mr-16 -mt-16"></div>
           <h2 className="text-[10px] font-black uppercase tracking-[0.25em] mb-8 flex items-center gap-3">
              <TrendingUp className="text-indigo-400" size={16} /> ML Surge Prediction
@@ -238,6 +266,7 @@ const Inventory = () => {
           )}
         </div>
       </div>
+      )}
     </div>
   );
 };

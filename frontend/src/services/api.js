@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8000/api';
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 // --- AUTH TOKEN MANAGEMENT ---
 const API = axios.create({
@@ -99,6 +99,9 @@ export const api = {
     
     cancelRequest: async (id) => {
       return API.delete(`/resource/cancel/${id}`);
+    },
+    updateLogistics: async (id, data) => {
+      return API.put(`/resource/logistics/${id}`, data);
     }
   },
 

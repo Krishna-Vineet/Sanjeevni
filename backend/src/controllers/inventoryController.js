@@ -12,10 +12,12 @@ const getInventory = asyncHandler(async (req, res) => {
         inventory = new Inventory({
             hospital_id: req.hospital._id,
             items: [
-                { name: 'Oxygen Cylinders', category: 'supplies', quantity: 50, unit: 'units' },
-                { name: 'ICU Ventilators', category: 'equipment', quantity: 15, unit: 'units' },
-                { name: 'Paracetamol', category: 'medicine', quantity: 1000, unit: 'tablets' },
-                { name: 'PPE Kits', category: 'supplies', quantity: 200, unit: 'units' }
+                { name: 'Oxygen Cylinders', category: 'supplies', quantity: 50, unit: 'units', min_threshold: 15 },
+                { name: 'ICU Ventilators', category: 'equipment', quantity: 15, unit: 'units', min_threshold: 5 },
+                { name: 'Paracetamol', category: 'medicine', quantity: 1000, unit: 'tablets', min_threshold: 200, expiry_date: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000) },
+                { name: 'PPE Kits', category: 'supplies', quantity: 200, unit: 'units', min_threshold: 50 },
+                { name: 'Amoxicillin', category: 'medicine', quantity: 500, unit: 'units', min_threshold: 100, expiry_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) },
+                { name: 'Defibrillators', category: 'equipment', quantity: 4, unit: 'units', min_threshold: 2 }
             ]
         });
         await inventory.save();
@@ -56,16 +58,23 @@ const getSurgePrediction = asyncHandler(async (req, res) => {
     const inventory = await Inventory.findOne({ hospital_id: req.hospital._id });
     const items = inventory ? inventory.items : [];
 
-    // Calculate gap
+    // Calculate gap and alerts
     const predictions = items.map(item => {
         const projectedUsage = item.quantity * surgeMultiplier;
         const gap = Math.max(0, Math.ceil(projectedUsage - item.quantity));
+        const isBelowThreshold = item.quantity <= item.min_threshold;
+        
+        // Expiry alert (if within 45 days)
+        const isExpiring = item.expiry_date ? (new Date(item.expiry_date) - new Date()) / (1000 * 60 * 60 * 24) < 45 : false;
+
         return {
             name: item.name,
             current: item.quantity,
             projected_need: Math.ceil(projectedUsage),
             gap,
-            priority: gap > 20 ? 'critical' : gap > 0 ? 'warning' : 'stable'
+            is_low_stock: isBelowThreshold,
+            is_expiring: isExpiring,
+            priority: gap > 20 || isBelowThreshold ? 'critical' : gap > 0 || isExpiring ? 'warning' : 'stable'
         };
     });
 

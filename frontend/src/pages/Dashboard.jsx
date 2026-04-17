@@ -105,7 +105,7 @@ const Dashboard = () => {
             <div className="flex justify-between items-center mb-8">
               <div className="flex items-center gap-3">
                  <div className="w-2 h-2 bg-rose-500 rounded-full animate-ping"></div>
-                 <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase text-sm">Code Red Priority Feed</h3>
+                 <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase">Code Red Priority Feed</h3>
               </div>
               <span className="bg-rose-500 text-white px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest">Live Scan</span>
             </div>
@@ -166,7 +166,7 @@ const Dashboard = () => {
           </div>
 
           <div className="card rounded-3xl p-8 border-none shadow-xl shadow-slate-200/50">
-            <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase text-sm mb-6 flex items-center gap-2">
+            <h3 className=" font-black text-slate-900 tracking-tight uppercase text-sm mb-6 flex items-center gap-2">
               <Activity className="text-sanjeevni-500" size={18} /> Resource Exchange Node
             </h3>
             <div className="p-8 bg-slate-50 rounded-3xl flex flex-col items-center justify-center border border-slate-100 text-center gap-4">
@@ -189,7 +189,7 @@ const Dashboard = () => {
         <div className="space-y-6">
           <div className="card bg-slate-900 text-white border-0 rounded-3xl p-8 relative overflow-hidden shadow-2xl">
             <div className="absolute -right-8 -top-8 w-24 h-24 bg-white/5 rounded-full blur-2xl"></div>
-            <h3 className="text-xl font-black mb-6 tracking-tight uppercase text-sm flex items-center gap-2">
+            <h3 className=" font-black mb-6 tracking-tight uppercase text-sm flex items-center gap-2">
                 <ShieldAlert size={18} /> Network News
             </h3>
             <div className="space-y-4">
