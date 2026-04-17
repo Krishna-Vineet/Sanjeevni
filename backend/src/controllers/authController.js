@@ -28,6 +28,9 @@ const loginHospital = asyncHandler(async (req, res) => {
                 name: hospital.name,
                 icu_beds: hospital.icu_beds,
                 general_beds: hospital.general_beds,
+                oxygen_units: hospital.oxygen_units,
+                ventilators: hospital.ventilators,
+                trust_score: hospital.trust_score,
                 location: { lat: hospital.location_lat, lng: hospital.location_lng }
             },
             message: "Login successful"

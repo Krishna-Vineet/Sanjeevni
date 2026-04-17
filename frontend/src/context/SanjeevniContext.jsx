@@ -84,6 +84,18 @@ export const SanjeevniProvider = ({ children }) => {
       // 2. Fetch Resource Exchanges
       const resourceRes = await api.resource.getAll();
       setResourceRequests(resourceRes.data.requests || []);
+
+      // 3. Sync Trust Score
+      const statsRes = await api.resource.getStats();
+      setHospitalInfo(prev => {
+         if (!prev) return prev;
+         if (prev.trust_score !== statsRes.data.trust_score) {
+             const updated = { ...prev, trust_score: statsRes.data.trust_score };
+             localStorage.setItem('sanjeevni_hospital', JSON.stringify(updated));
+             return updated;
+         }
+         return prev;
+      });
     } catch (err) {
       console.error("Failed to refresh network data", err);
     }

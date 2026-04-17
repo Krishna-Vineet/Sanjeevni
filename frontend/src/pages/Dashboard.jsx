@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, Users, Battery, AlertTriangle, Check, X, ArrowRight, Loader2, ShieldAlert } from 'lucide-react';
+import { Activity, Users, Battery, AlertTriangle, Check, X, ArrowRight, Loader2, ShieldAlert, ShieldCheck, Plus, Send } from 'lucide-react';
 import { useSanjeevni } from '../context/SanjeevniContext';
 import { api } from '../services/api';
 
@@ -27,6 +27,10 @@ const Dashboard = () => {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(false);
   const [processingId, setProcessingId] = useState(null);
+  const [showNewsForm, setShowNewsForm] = useState(false);
+  const [newsTitle, setNewsTitle] = useState('');
+  const [newsContent, setNewsContent] = useState('');
+  const [broadcasting, setBroadcasting] = useState(false);
 
   useEffect(() => {
     fetchIncoming();
@@ -53,6 +57,23 @@ const Dashboard = () => {
       setNews(res.data.news || []);
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleBroadcastNews = async (e) => {
+    e.preventDefault();
+    if(!newsTitle || !newsContent) return;
+    setBroadcasting(true);
+    try {
+        await api.news.broadcast({ title: newsTitle, content: newsContent });
+        setNewsTitle('');
+        setNewsContent('');
+        setShowNewsForm(false);
+        fetchNews();
+    } catch (err) {
+        console.error("Broadcast failed", err);
+    } finally {
+        setBroadcasting(false);
     }
   };
 
@@ -95,8 +116,8 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard icon={Activity} label="Critical Capacity" value={`${hospitalInfo.icu_beds} Beds`} trend={-4} color="sanjeevni" />
         <StatCard icon={Users} label="Active Transfers" value={activeTransfers.length} trend={+15} color="blue" />
-        <StatCard icon={Battery} label="O2 Optimization" value={`${hospitalInfo.oxygen_units}%`} trend={+2} color="amber" />
-        <StatCard icon={AlertTriangle} label="Elite Coverage" value="100%" trend={0} color="rose" />
+        <StatCard icon={Battery} label="O2 Supplies" value={`${hospitalInfo?.oxygen_units} units`} trend={+2} color="amber" />
+        <StatCard icon={ShieldCheck} label="Network Trust Score" value={`${hospitalInfo?.trust_score || 0}%`} trend={+5} color="indigo" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -189,17 +210,56 @@ const Dashboard = () => {
         <div className="space-y-6">
           <div className="card bg-slate-900 text-white border-0 rounded-3xl p-8 relative overflow-hidden shadow-2xl">
             <div className="absolute -right-8 -top-8 w-24 h-24 bg-white/5 rounded-full blur-2xl"></div>
-            <h3 className=" font-black mb-6 tracking-tight uppercase text-sm flex items-center gap-2">
-                <ShieldAlert size={18} /> Network News
-            </h3>
-            <div className="space-y-4">
+            <div className="flex justify-between items-center mb-6 z-10 relative">
+               <h3 className=" font-black tracking-tight uppercase text-sm flex items-center gap-2">
+                  <ShieldAlert size={18} /> Network News
+               </h3>
+               <button 
+                  onClick={() => setShowNewsForm(!showNewsForm)}
+                  className="bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-xl font-bold text-[9px] uppercase tracking-widest flex items-center gap-1 transition-all"
+               >
+                  {showNewsForm ? <X size={14} /> : <Plus size={14} />} {showNewsForm ? 'Cancel' : 'Broadcast'}
+               </button>
+            </div>
+            
+            {showNewsForm && (
+               <form onSubmit={handleBroadcastNews} className="space-y-4 mb-6 pt-4 border-t border-white/10 relative z-10 animate-in slide-in-from-top-2">
+                 <input 
+                   type="text" 
+                   placeholder="Headline" 
+                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-sanjeevni-500 transition-all text-white placeholder:text-white/30"
+                   value={newsTitle}
+                   onChange={(e) => setNewsTitle(e.target.value)}
+                 />
+                 <textarea 
+                   placeholder="Message Content..." 
+                   rows="3"
+                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs font-medium focus:outline-none focus:border-sanjeevni-500 transition-all text-white placeholder:text-white/30 resize-none custom-scrollbar"
+                   value={newsContent}
+                   onChange={(e) => setNewsContent(e.target.value)}
+                 ></textarea>
+                 <button 
+                   type="submit" 
+                   disabled={broadcasting}
+                   className="w-full py-3 bg-sanjeevni-500 hover:bg-sanjeevni-600 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-lg"
+                 >
+                   {broadcasting ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />} 
+                   Transmit to Network
+                 </button>
+               </form>
+            )}
+
+            <div className="space-y-4 relative z-10">
               {news.length === 0 ? (
                 <p className="text-slate-500 text-xs italic">Awaiting critical broadcasts...</p>
               ) : (
                 news.map((item, i) => (
-                  <div key={i} className={`p-5 rounded-2xl border ${item.is_external ? 'bg-white/5 border-white/5' : 'bg-sanjeevni-500/10 border-sanjeevni-500/20'} transition-all hover:bg-white/10`}>
-                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mb-2">{item.source}</p>
-                    <p className="font-black text-sm leading-tight mb-2">{item.title}</p>
+                  <div key={i} className={`p-5 rounded-2xl border ${item.source === hospitalInfo.name ? 'bg-sanjeevni-500/10 border-sanjeevni-500/30' : 'bg-white/5 border-white/5'} transition-all hover:bg-white/10 flex flex-col gap-1`}>
+                    <div className="flex justify-between items-center mb-1">
+                      <p className="text-[9px] text-sanjeevni-400 font-black uppercase tracking-[0.2em]">{item.source}</p>
+                      <span className="text-[8px] text-slate-500 font-bold uppercase">{new Date(item.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    </div>
+                    <p className="font-black text-sm leading-tight text-white">{item.title}</p>
                     <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">{item.content}</p>
                   </div>
                 ))

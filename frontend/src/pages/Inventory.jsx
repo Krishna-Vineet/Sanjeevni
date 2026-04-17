@@ -112,9 +112,8 @@ const Inventory = () => {
                 <tr className="border-b border-slate-50">
                   <th className="text-left py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest px-4">Asset Name</th>
                   <th className="text-left py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest px-4">Category</th>
-                  <th className="text-left py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest px-4">Batch</th>
-                  <th className="text-left py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest px-4">Expiry</th>
-                  <th className="text-left py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest px-4">Stock</th>
+                  <th className="text-left py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest px-4">In-Stock</th>
+                  <th className="text-left py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest px-4">Unit</th>
                   <th className="text-right py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest px-4 italic">Action</th>
                 </tr>
               </thead>
@@ -142,38 +141,20 @@ const Inventory = () => {
                       </select>
                     </td>
                     <td className="py-4 px-4">
-                      <input 
+                        <input 
+                          type="number" 
+                          value={item.quantity} 
+                          onChange={(e) => updateItem(idx, 'quantity', parseInt(e.target.value) || 0)}
+                          className="bg-slate-100/50 px-3 py-1.5 rounded-lg font-black text-slate-900 outline-none w-20"
+                        />
+                    </td>
+                    <td className="py-4 px-4">
+                       <input 
                         type="text" 
-                        value={item.batch_number || ''} 
-                        onChange={(e) => updateItem(idx, 'batch_number', e.target.value)}
-                        placeholder="Batch"
-                        className="bg-transparent font-black text-slate-400 outline-none w-20 text-[10px]"
+                        value={item.unit} 
+                        onChange={(e) => updateItem(idx, 'unit', e.target.value)}
+                        className="bg-transparent font-medium text-slate-400 outline-none w-20 text-xs"
                       />
-                    </td>
-                    <td className="py-4 px-4">
-                      <input 
-                        type="date" 
-                        value={item.expiry_date ? new Date(item.expiry_date).toISOString().split('T')[0] : ''} 
-                        onChange={(e) => updateItem(idx, 'expiry_date', e.target.value)}
-                        className={`bg-transparent text-[10px] font-bold outline-none ${
-                           item.expiry_date && (new Date(item.expiry_date) - new Date()) / (1000 * 60 * 60 * 24) < 30 ? 'text-rose-500' : 'text-slate-500'
-                        }`}
-                      />
-                    </td>
-                    <td className="py-4 px-4">
-                        <div className="flex flex-col">
-                          <input 
-                            type="number" 
-                            value={item.quantity} 
-                            onChange={(e) => updateItem(idx, 'quantity', parseInt(e.target.value) || 0)}
-                            className={`bg-slate-100/50 px-3 py-1.5 rounded-lg font-black outline-none w-20 ${
-                               item.quantity <= (item.min_threshold || 10) ? 'text-rose-600 border border-rose-100 bg-rose-50' : 'text-slate-900'
-                            }`}
-                          />
-                          <span className="text-[8px] font-black text-slate-400 mt-1 uppercase tracking-tighter">
-                            {item.unit || 'units'}
-                          </span>
-                        </div>
                     </td>
                     <td className="py-4 px-4 text-right">
                        <button onClick={() => removeItem(idx)} className="text-slate-200 hover:text-rose-500 transition-colors p-2 rounded-lg hover:bg-rose-50">

@@ -9,15 +9,15 @@ const HospitalSettings = () => {
   const [success, setSuccess] = useState(false);
   
   const [capacity, setCapacity] = useState({
-    icu_beds: hospitalInfo.icu_beds,
-    general_beds: hospitalInfo.general_beds,
-    oxygen_units: 20,
-    ventilators: 3
+    icu_beds: hospitalInfo?.icu_beds || 0,
+    general_beds: hospitalInfo?.general_beds || 0,
+    oxygen_units: hospitalInfo?.oxygen_units || 0,
+    ventilators: hospitalInfo?.ventilators || 0
   });
 
   const [settings, setSettings] = useState({
-    auto_accept_enabled: true,
-    conditions: {
+    auto_accept_enabled: hospitalInfo?.auto_accept_enabled || false,
+    conditions: hospitalInfo?.auto_accept_conditions || {
       severity: 'critical',
       required_resources: ['ICU Bed']
     }
@@ -27,8 +27,10 @@ const HospitalSettings = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await api.hospital.updateCapacity(hospitalInfo.hospital_id, capacity);
-      setHospitalInfo({ ...hospitalInfo, icu_beds: capacity.icu_beds, general_beds: capacity.general_beds });
+      await api.hospital.updateCapacity(capacity);
+      const updatedProfile = { ...hospitalInfo, icu_beds: capacity.icu_beds, general_beds: capacity.general_beds, oxygen_units: capacity.oxygen_units, ventilators: capacity.ventilators };
+      setHospitalInfo(updatedProfile);
+      localStorage.setItem('sanjeevni_hospital', JSON.stringify(updatedProfile));
       triggerSuccess();
     } catch (err) {
       console.error(err);
@@ -41,7 +43,10 @@ const HospitalSettings = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await api.hospital.updateSettings(hospitalInfo.hospital_id, settings);
+      await api.hospital.updateSettings(settings);
+      const updatedProfile = { ...hospitalInfo, auto_accept_enabled: settings.auto_accept_enabled, auto_accept_conditions: settings.conditions };
+      setHospitalInfo(updatedProfile);
+      localStorage.setItem('sanjeevni_hospital', JSON.stringify(updatedProfile));
       triggerSuccess();
     } catch (err) {
       console.error(err);
@@ -156,19 +161,33 @@ const HospitalSettings = () => {
             </div>
 
             <form onSubmit={handleSaveSettings} className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 opacity-60 pointer-events-none grayscale">
+              <div className={`grid grid-cols-1 sm:grid-cols-2 gap-6 ${!settings.auto_accept_enabled ? 'opacity-60 pointer-events-none grayscale' : 'transition-all duration-300'}`}>
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-slate-700">Trigger Severity</label>
-                  <select className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none">
-                    <option>Critical Only</option>
-                    <option>Moderate & Critical</option>
+                  <select 
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
+                    value={settings.conditions.severity}
+                    onChange={(e) => setSettings({
+                      ...settings, 
+                      conditions: { ...settings.conditions, severity: e.target.value }
+                    })}
+                  >
+                    <option value="critical">Critical Only</option>
+                    <option value="moderate">Moderate & Critical</option>
                   </select>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-slate-700">Target Resource</label>
-                  <select className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none">
-                    <option>ICU Bed</option>
-                    <option>Ventilator</option>
+                  <select 
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
+                    value={settings.conditions.required_resources[0]}
+                    onChange={(e) => setSettings({
+                      ...settings, 
+                      conditions: { ...settings.conditions, required_resources: [e.target.value] }
+                    })}
+                  >
+                    <option value="ICU Bed">ICU Bed</option>
+                    <option value="Ventilator">Ventilator</option>
                   </select>
                 </div>
               </div>

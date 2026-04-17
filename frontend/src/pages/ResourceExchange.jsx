@@ -125,61 +125,27 @@ const ResourceExchange = () => {
                 <option className="text-slate-900">Dialysis Gear</option>
               </select>
             </div>
-            <div className="flex gap-4">
-              <div className="flex-1 space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Qty</label>
-                <input 
-                  type="number" 
-                  className="w-full bg-white/10 border border-white/10 rounded-2xl px-5 py-4 text-sm font-bold focus:outline-none"
-                  value={newRequestData.quantity}
-                  onChange={(e) => setNewRequestData({...newRequestData, quantity: e.target.value})}
-                />
-              </div>
-              <div className="flex-1 space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Unit</label>
-                <input 
-                  type="text" 
-                  placeholder="Units/litres/kits"
-                  className="w-full bg-white/10 border border-white/10 rounded-2xl px-5 py-4 text-xs font-bold focus:outline-none"
-                  value={newRequestData.unit}
-                  onChange={(e) => setNewRequestData({...newRequestData, unit: e.target.value})}
-                />
-              </div>
-            </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Priority</label>
-              <select 
-                className="w-full bg-white/10 border border-white/10 rounded-2xl px-5 py-4 text-sm font-bold focus:outline-none"
-                value={newRequestData.priority}
-                onChange={(e) => setNewRequestData({...newRequestData, priority: e.target.value})}
-              >
-                <option value="normal" className="text-slate-900">Normal</option>
-                <option value="urgent" className="text-slate-900">Urgent</option>
-                <option value="emergency" className="text-slate-900">Emergency</option>
-              </select>
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Operational Notes</label>
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Quantity</label>
               <input 
-                type="text" 
-                placeholder="Specific instructions..."
-                className="w-full bg-white/10 border border-white/10 rounded-2xl px-5 py-4 text-xs font-bold focus:outline-none"
-                value={newRequestData.notes}
-                onChange={(e) => setNewRequestData({...newRequestData, notes: e.target.value})}
+                type="number" 
+                className="w-full bg-white/10 border border-white/10 rounded-2xl px-5 py-4 text-sm font-bold focus:outline-none"
+                value={newRequestData.quantity}
+                onChange={(e) => setNewRequestData({...newRequestData, quantity: e.target.value})}
               />
             </div>
-            <div className="md:col-span-4 flex gap-4 pt-4">
+            <div className="md:col-span-2 flex gap-4">
               <button 
                 type="button" 
                 onClick={() => setShowNewRequest(false)}
-                className="px-8 py-4 font-black text-slate-400 hover:text-white transition-all text-xs uppercase tracking-widest"
+                className="flex-1 py-4 font-black text-slate-400 hover:text-white transition-all text-xs uppercase tracking-widest"
               >
-                Cancel
+                Collapse
               </button>
               <button 
                 type="submit" 
                 disabled={loading}
-                className="flex-1 bg-sanjeevni-500 text-white py-4 px-8 rounded-2xl font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-2 hover:bg-sanjeevni-600 transition-all shadow-lg shadow-sanjeevni-500/30"
+                className="flex-2 bg-sanjeevni-500 text-white py-4 px-8 rounded-2xl font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-2 hover:bg-sanjeevni-600 transition-all shadow-lg shadow-sanjeevni-500/30"
               >
                 {loading ? <Loader2 className="animate-spin" /> : <Plus size={16} />}
                 Transmit Uplink
@@ -219,19 +185,12 @@ const ResourceExchange = () => {
                         <div className="flex items-center gap-3">
                           <p className="font-black text-slate-900 text-lg uppercase tracking-tight">{req.resource_type}</p>
                           <span className={`text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-tighter ${
-                            req.priority === 'emergency' ? 'bg-rose-500 text-white' : 
-                            req.priority === 'urgent' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-700'
-                          }`}>
-                            {req.priority}
-                          </span>
-                          <span className={`text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-tighter ${
-                            req.status === 'accepted' || req.status === 'shipped' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-700'
+                            req.status === 'accepted' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
                           }`}>
                             {req.status}
                           </span>
                         </div>
-                        <p className="text-sm font-bold text-slate-500 mt-0.5">Quantity: <span className="text-slate-900">{req.quantity} {req.unit}</span></p>
-                        {req.notes && <p className="text-[11px] text-slate-400 mt-2 bg-slate-100 p-2 rounded-xl italic">"{req.notes}"</p>}
+                        <p className="text-sm font-bold text-slate-500 mt-0.5">Quantity: <span className="text-slate-900">{req.quantity} Units</span></p>
                         <p className="text-[10px] text-slate-400 mt-2 uppercase font-black tracking-widest">
                             {(req.requesting_hospital_id === hospitalInfo?.hospital_id || req.requesting_hospital_id === hospitalInfo?.id) ? '🚨 YOUR REQUEST' : `Node ID: ${req.requesting_hospital_id}`}
                         </p>
@@ -249,38 +208,32 @@ const ResourceExchange = () => {
                           </button>
                         )}
 
-                        {/* LOGISTICS CONTROLS FOR INVOLVED PARTIES */}
-                        {(req.status === 'accepted' || req.status === 'shipped' || req.status === 'delivered') && (
-                          <div className="flex flex-col items-end gap-3">
-                             <div className="flex gap-2">
-                                {req.status === 'accepted' && (req.fulfilled_by === hospitalInfo?.hospital_id) && (
-                                  <button 
-                                    onClick={() => handleUpdateLogistics(req.id, 'shipped')}
-                                    className="px-4 py-2 bg-emerald-500 text-white rounded-xl text-[9px] font-black uppercase tracking-widest"
-                                  >
-                                    Mark Shipped
-                                  </button>
-                                )}
-                                {req.status === 'shipped' && (req.requesting_hospital_id === hospitalInfo?.hospital_id || req.requesting_hospital_id === hospitalInfo?.id) && (
-                                  <button 
-                                    onClick={() => handleUpdateLogistics(req.id, 'delivered')}
-                                    className="px-4 py-2 bg-blue-500 text-white rounded-xl text-[9px] font-black uppercase tracking-widest"
-                                  >
-                                    Confirm Delivery
-                                  </button>
-                                )}
-                                {req.status === 'delivered' && (req.requesting_hospital_id === hospitalInfo?.hospital_id || req.requesting_hospital_id === hospitalInfo?.id) && (
-                                  <button 
-                                    onClick={() => handleUpdateLogistics(req.id, 'completed')}
-                                    className="px-4 py-2 bg-slate-900 text-white rounded-xl text-[9px] font-black uppercase tracking-widest"
-                                  >
-                                    Complete Audit
-                                  </button>
-                                )}
-                             </div>
-                             <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest mr-2">
+                        {/* STATUS FOR REQUESTING HOSPITAL */}
+                        {req.status === 'pending' && (req.requesting_hospital_id === hospitalInfo?.hospital_id || req.requesting_hospital_id === hospitalInfo?.id) && (
+                          <div className="flex items-center gap-4">
+                            <div className="flex flex-col items-end mr-2">
+                                <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest mb-1">Status</span>
+                                <span className="text-[10px] text-amber-500 font-black uppercase animate-pulse">Awaiting fulfillment...</span>
+                            </div>
+                            <button 
+                                onClick={() => handleCancel(req.id)}
+                                className="px-6 h-14 bg-rose-50 text-rose-500 border border-rose-100 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose-500 hover:text-white transition-all active:scale-95"
+                                title="Withdraw Request"
+                            >
+                                <X size={18} /> Withdraw
+                            </button>
+                          </div>
+                        )}
+
+                        {/* CASE: ACCEPTED (ALREADY FILTERED BY BACKEND TO ONLY BE VISIBLE TO INVOLVED) */}
+                        {req.status === 'accepted' && (
+                          <div className="flex flex-col items-end">
+                            <div className="px-6 py-3 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center gap-3 text-emerald-600 font-black text-[10px] uppercase tracking-widest shadow-sm shadow-emerald-500/10">
+                                <ShieldCheck size={18} /> Secured Link
+                            </div>
+                            <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest mt-2 mr-2">
                                 Fulfilled by: <b className="text-slate-900">{req.fulfilled_by}</b>
-                             </span>
+                            </span>
                           </div>
                         )}
                     </div>

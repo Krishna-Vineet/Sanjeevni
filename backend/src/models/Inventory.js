@@ -14,8 +14,6 @@ const inventorySchema = new mongoose.Schema({
             quantity: { type: Number, default: 0 },
             unit: { type: String, default: 'units' },
             min_threshold: { type: Number, default: 10 },
-            batch_number: { type: String },
-            expiry_date: { type: Date },
             last_updated: { type: Date, default: Date.now }
         }
     ]

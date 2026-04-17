@@ -154,11 +154,11 @@ const TransferRequest = () => {
           {[1, 2, 3].map((s) => (
             <div key={s} className="flex flex-col items-center gap-2 group">
               <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${
-                step >= s ? 'bg-emergency-red text-white shadow-lg shadow-emergency-red/30' : 'bg-slate-200 text-slate-500'
+                step >= s ? 'bg-red-400 text-white shadow-lg shadow-emergency-red/30' : 'bg-slate-200 text-slate-500'
               }`}>
                 {step > s ? <CheckCircle size={18} /> : s}
               </div>
-              <span className={`text-[10px] font-black uppercase tracking-widest ${step >= s ? 'text-emergency-red' : 'text-slate-400'}`}>
+              <span className={`text-[10px] font-black uppercase tracking-widest text-slate-400`}>
                 {s === 1 ? 'Condition' : s === 2 ? 'Elite Match' : 'Broadcast'}
               </span>
             </div>
@@ -288,7 +288,7 @@ const TransferRequest = () => {
                   <button onClick={() => setStep(1)} className="flex-1 py-6 font-black text-slate-400 hover:text-slate-600 text-xs uppercase tracking-widest">Back</button>
                   <button 
                     onClick={handleBroadcast} 
-                    className="flex-3 py-6 bg-emergency-red text-white rounded-3xl font-black text-sm uppercase tracking-[0.25em] shadow-2xl shadow-emergency-red/40 hover:scale-[1.02] transition-transform active:scale-[0.98] flex items-center justify-center gap-3"
+                    className="flex-3 py-6 bg-red-500 text-white rounded-3xl font-black text-sm uppercase tracking-[0.25em] shadow-2xl shadow-emergency-red/40 hover:scale-[1.02] transition-transform active:scale-[0.98] flex items-center justify-center gap-3"
                   >
                     Broadcast Code Red
                   </button>

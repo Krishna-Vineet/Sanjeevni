@@ -8,7 +8,7 @@ class SanjeevniAI {
         this.apiKey = process.env.GEMINI_API_KEY;
         if (this.apiKey) {
             this.genAI = new GoogleGenerativeAI(this.apiKey);
-            this.model = this.genAI.getGenerativeModel({ model: "gemini-pro" });
+            this.model = this.genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
         } else {
             this.model = null;
         }
@@ -26,24 +26,16 @@ class SanjeevniAI {
             // System instruction to establish role
             const systemContext = "You are 'Sanjeevni AI', a senior medical clinical assistant. " + 
                                   "Provide concise, accurate clinical advice based on symptoms and vitals. " +
-                                  "Identify critical risks immediately. Always suggest nearest ICU resources if vitals are unstable.";
+                                  "Identify critical risks immediately." +
+                                  "Reply in max 30 word paragraph, plain text, no md, no bold, no italic, no bullet points, etc.";
             
-            // Format history for Gemini (limited to last 15 messages as requested)
-            const chatHistory = history.slice(-15).map(msg => ({
-                role: msg.role === 'user' ? 'user' : 'model',
-                parts: [{ text: msg.content }]
-            }));
+            // Combine system context with the immediate user input
+            const fullPrompt = `${systemContext}\n\nPatient Condition: ${userInput}`;
 
-            const chat = this.model.startChat({
-                history: chatHistory,
-                generationConfig: {
-                    maxOutputTokens: 500,
-                },
+            const result = await this.model.generateContent({
+                contents: [{ role: "user", parts: [{ text: fullPrompt }] }],
             });
-
-            const fullPrompt = history.length === 0 ? `${systemContext}\nPatient Info: ${userInput}` : userInput;
-
-            const result = await chat.sendMessage(fullPrompt);
+            
             const response = await result.response;
             const text = response.text();
 

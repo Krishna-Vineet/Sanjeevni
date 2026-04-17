@@ -9,7 +9,7 @@ const generateResourceRequestId = () => `RR${uuidv4().split('-')[0].substring(0,
 // @route   POST /api/resource/request
 // @access  Private
 const createResourceRequest = asyncHandler(async (req, res) => {
-    const { resource_type, quantity, unit, priority, notes } = req.body;
+    const { resource_type, quantity } = req.body;
     const hospital_id = req.hospital.hospital_id;
 
     const rrId = generateResourceRequestId();
@@ -18,14 +18,11 @@ const createResourceRequest = asyncHandler(async (req, res) => {
         requesting_hospital_id: hospital_id,
         resource_type,
         quantity,
-        unit: unit || 'units',
-        priority: priority || 'normal',
-        notes: notes || '',
         status: "pending"
     });
 
     await resourceReq.save();
-    res.status(201).json({ resource_request_id: rrId, status: "created", data: resourceReq });
+    res.status(201).json({ resource_request_id: rrId, status: "created" });
 });
 
 // @desc    Respond to resource request
@@ -92,13 +89,9 @@ const getAllResourceRequests = asyncHandler(async (req, res) => {
         id: r.resource_request_id,
         resource_type: r.resource_type,
         quantity: r.quantity,
-        unit: r.unit,
-        priority: r.priority,
-        notes: r.notes,
         status: r.status,
         requesting_hospital_id: r.requesting_hospital_id,
-        fulfilled_by: r.fulfilled_by,
-        date: r.createdAt
+        fulfilled_by: r.fulfilled_by
     }));
     res.json({ requests: entries });
 });
@@ -159,38 +152,10 @@ const cancelResourceRequest = asyncHandler(async (req, res) => {
     res.json({ status: "cancelled", message: "Request removed from network" });
 });
 
-// @desc    Update logistics status of a fulfilled request
-// @route   PUT /api/resource/logistics/:id
-// @access  Private
-const updateLogisticsStatus = asyncHandler(async (req, res) => {
-    const { status } = req.body; // shipped, delivered, completed
-    const { id } = req.params;
-    const hospital_id = req.hospital.hospital_id;
-
-    const resourceReq = await ResourceRequest.findOne({ resource_request_id: id });
-    if (!resourceReq) {
-        res.status(404);
-        throw new Error("Resource request not found");
-    }
-
-    // Only fulfiller or requester can update status depending on the stage
-    // Typically the fulfiller handles 'shipped' and the requester handles 'delivered/completed'
-    const allowed = [resourceReq.requesting_hospital_id, resourceReq.fulfilled_by].includes(hospital_id);
-    if (!allowed) {
-        res.status(403);
-        throw new Error("Not authorized to update this logistics stream");
-    }
-
-    resourceReq.status = status;
-    await resourceReq.save();
-    res.json({ status: resourceReq.status, message: "Logistics updated" });
-});
-
 module.exports = {
     createResourceRequest,
     respondToResourceRequest,
     getAllResourceRequests,
     getResourceStats,
-    cancelResourceRequest,
-    updateLogisticsStatus
+    cancelResourceRequest
 };

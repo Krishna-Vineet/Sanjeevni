@@ -5,11 +5,8 @@ const resourceRequestSchema = new mongoose.Schema({
     requesting_hospital_id: { type: String, required: true },
     resource_type: { type: String, required: true },
     quantity: { type: Number, required: true },
-    unit: { type: String, default: 'units' },
-    priority: { type: String, default: 'normal' }, // normal, urgent, emergency
-    status: { type: String, default: 'pending' }, // pending, accepted, shipped, delivered, completed
-    fulfilled_by: { type: String, default: null },
-    notes: { type: String }
+    status: { type: String, default: 'pending' }, // pending, accepted, fulfilled, closed
+    fulfilled_by: { type: String, default: null }
 }, { timestamps: true });
 
 module.exports = mongoose.model('ResourceRequest', resourceRequestSchema);

@@ -85,7 +85,7 @@ const SmartDoctor = () => {
                         <Activity size={16} /> Urgent Action Recommended
                       </div>
                       <button 
-                        onClick={() => window.location.hash = '/transfer'}
+                        onClick={() => window.location.href = '/transfer'}
                         className="text-white bg-rose-600 px-3 py-1 rounded-lg text-xs font-bold hover:bg-rose-700 transition-all flex items-center gap-1"
                       >
                         Start Transfer <ChevronRight size={14} />
