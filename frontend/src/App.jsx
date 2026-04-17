@@ -9,6 +9,39 @@ import SmartDoctor from './pages/SmartDoctor'
 import AdminCenter from './pages/AdminCenter'
 import HospitalSettings from './pages/HospitalSettings'
 import Login from './pages/Login'
+import Analytics from './pages/Analytics'
+import { AlertCircle, CheckCircle, Info, X } from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
+
+// Notification Toast Component
+const NotificationToast = () => {
+  const { notifications } = useSanjeevni();
+  
+  return (
+    <div className="fixed top-6 right-6 z-[100] space-y-3 w-80">
+      <AnimatePresence>
+        {notifications.map((n) => (
+          <motion.div
+            key={n.id}
+            initial={{ opacity: 0, x: 50, scale: 0.9 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+            className={`p-4 rounded-2xl shadow-2xl border flex items-center gap-3 backdrop-blur-xl ${
+              n.type === 'success' ? 'bg-emerald-500/90 text-white border-emerald-400' :
+              n.type === 'error' ? 'bg-rose-500/90 text-white border-rose-400' :
+              'bg-slate-800/90 text-white border-slate-700'
+            }`}
+          >
+            {n.type === 'success' ? <CheckCircle size={20} /> :
+             n.type === 'error' ? <AlertCircle size={20} /> :
+             <Info size={20} />}
+            <p className="text-sm font-bold flex-1">{n.message}</p>
+          </motion.div>
+        ))}
+      </AnimatePresence>
+    </div>
+  );
+};
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -29,18 +62,11 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-// Placeholder components for other pages
-const Placeholder = ({ name }) => (
-  <div className="flex flex-col items-center justify-center h-[80vh] text-slate-400">
-    <h2 className="text-2xl font-bold mb-2">{name}</h2>
-    <p>This module is coded and ready for further feature development.</p>
-  </div>
-);
-
 function App() {
   return (
     <Router>
       <SanjeevniProvider>
+        <NotificationToast />
         <Routes>
           <Route path="/login" element={<Login />} />
           
@@ -57,7 +83,7 @@ function App() {
                       <Route path="/resources" element={<ResourceExchange />} />
                       <Route path="/ai" element={<SmartDoctor />} />
                       <Route path="/admin" element={<AdminCenter />} />
-                      <Route path="/analytics" element={<Placeholder name="System Analytics" />} />
+                      <Route path="/analytics" element={<Analytics />} />
                       <Route path="/settings" element={<HospitalSettings />} />
                     </Routes>
                   </div>
