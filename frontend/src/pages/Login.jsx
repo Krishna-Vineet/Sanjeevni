@@ -42,8 +42,8 @@ const Login = () => {
 
       <div className="w-full max-w-md animate-in fade-in zoom-in-95 duration-700">
         <div className="flex flex-col items-center mb-10">
-          <div className="w-20 h-20 bg-sanjeevni-500 rounded-2xl flex items-center justify-center text-white mb-6 shadow-2xl shadow-sanjeevni-500/40 transform -rotate-6 hover:rotate-0 transition-transform">
-            <Shield size={42} strokeWidth={2.5} />
+          <div className="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 shadow-2xl shadow-sanjeevni-500/40 transform -rotate-6 hover:rotate-0 transition-transform overflow-hidden">
+            <img src="/icon.png" alt="Sanjeevni" className="w-full h-full object-cover" />
           </div>
           <h1 className="text-4xl font-black text-white tracking-tight">Sanjeevni</h1>
           <p className="text-slate-400 mt-2 font-medium tracking-wide uppercase text-xs">Hospital Network OS</p>

@@ -18,8 +18,8 @@ const Sidebar = () => {
   return (
     <div className="w-64 bg-hospital-sidebar h-screen text-slate-300 fixed flex flex-col border-r border-slate-800 z-50">
       <div className="p-6 flex items-center gap-3">
-        <div className="w-10 h-10 bg-sanjeevni-500 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-sanjeevni-500/20">
-          S
+        <div className="w-10 h-10 rounded-lg overflow-hidden shadow-lg shadow-sanjeevni-500/20 flex-shrink-0">
+          <img src="/icon.png" alt="Sanjeevni" className="w-full h-full object-cover" />
         </div>
         <span className="text-xl font-bold text-white tracking-tight">Sanjeevni</span>
       </div>
