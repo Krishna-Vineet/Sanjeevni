@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8000/api';
-// const BASE_URL = 'https://sanjeevni-9zgt.onrender.com/api';
+// const BASE_URL = 'http://localhost:8000/api';
+const BASE_URL = 'https://sanjeevni-9zgt.onrender.com/api';
 
 // --- AUTH TOKEN MANAGEMENT ---
 const API = axios.create({
