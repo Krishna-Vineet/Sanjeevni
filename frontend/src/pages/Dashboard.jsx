@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Activity, Users, Battery, AlertTriangle, Check, X, ArrowRight, Loader2, ShieldAlert, ShieldCheck, Plus, Send } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useSanjeevni } from '../context/SanjeevniContext';
 import { api } from '../services/api';
 
@@ -200,9 +201,9 @@ const Dashboard = () => {
                 </p>
                 <p className="text-xs text-slate-400 font-medium max-w-xs mx-auto mt-1">Directly fulfill peer resource needs or broadcast your own requirements to the elite network.</p>
               </div>
-              <a href="/resources" className="w-full">
+              <Link to="/resources" className="w-full">
                 <button className="w-full px-8 py-4 bg-white border border-slate-200 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all shadow-sm">Enter Exchange Hub</button>
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -295,11 +296,11 @@ const Dashboard = () => {
               {(activeTransfers.filter(t => t.status === 'confirmed').length === 0 && resourceRequests.filter(r => r.status === 'accepted').length === 0) && (
                 <p className="text-xs text-slate-300 font-bold text-center italic py-4 tracking-wider">LOGISTICS SILENT</p>
               )}
-              <a href="/resources" className="block w-full">
+              <Link to="/resources" className="block w-full">
                 <button className="w-full mt-4 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] hover:text-slate-900 hover:bg-slate-50 rounded-2xl transition-all border border-transparent hover:border-slate-100">
                   Detailed Manifest
                 </button>
-              </a>
+              </Link>
             </div>
           </div>
         </div>

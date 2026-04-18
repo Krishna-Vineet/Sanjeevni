@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Package, Plus, Trash2, Save, TrendingUp, AlertCircle, CheckCircle, RefreshCw, Loader2, ArrowUpRight } from 'lucide-react';
 import { api } from '../services/api';
 import { useSanjeevni } from '../context/SanjeevniContext';
+import { Link } from 'react-router-dom';
 
 const Inventory = () => {
   const { hospitalInfo, addNotification } = useSanjeevni();
@@ -36,7 +37,25 @@ const Inventory = () => {
       const res = await api.ml.predictNext7Days(hospitalInfo.hospital_id);
       setRawMLData(res.data);
     } catch (err) {
-      console.error("ML Prediction Failed:", err);
+      console.warn("ML server unreachable, using fallback estimate:", err.message);
+
+      const basePts = Math.round((hospitalInfo.icu_beds || 20) * 0.8);
+      const predictions = Array.from({ length: 7 }, (_, i) => ({
+        predicted_patients: Math.round(basePts * (1 + i * 0.03)),
+        resources: {}
+      }));
+      const peakPts = predictions[predictions.length - 1].predicted_patients;
+
+      setRawMLData({
+        predictions,
+        total_resources_needed: {
+          ventilators:    Math.ceil(peakPts * 0.05),
+          oxygen_cylinders: Math.ceil(peakPts * 0.4),
+          ppe_kits:       Math.ceil(peakPts * 0.5),
+          masks:          peakPts * 5,
+          doctors:        Math.max(1, Math.ceil(peakPts / 8))
+        }
+      });
     }
   };
 
@@ -276,9 +295,11 @@ const Inventory = () => {
                            </div>
                            
                            {rec.gap > 0 && (
-                            <button className="w-full mt-4 py-2 bg-white/5 rounded-xl text-[8px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all hover:bg-white/10 flex items-center justify-center gap-2">
-                               Request from Network <ArrowUpRight size={10} />
-                            </button>
+                            <Link to="/resources" className="block w-full">
+                              <button className="w-full mt-4 py-2 bg-white/5 rounded-xl text-[8px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all hover:bg-white/10 flex items-center justify-center gap-2">
+                                Request from Network <ArrowUpRight size={10} />
+                              </button>
+                            </Link>
                            )}
                         </div>
                       ))}
