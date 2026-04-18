@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Shield, Lock, Hospital, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
+import { Shield, Lock, Hospital, ArrowRight, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { useSanjeevni } from '../context/SanjeevniContext';
 import { useNavigate, Navigate } from 'react-router-dom';
 
@@ -11,6 +11,7 @@ const Login = () => {
     password: ''
   });
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   if (isAuthenticated) return <Navigate to="/" />;
 
@@ -72,13 +73,22 @@ const Login = () => {
               <label className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
                 <Lock size={14} /> Access Password
               </label>
-              <input 
-                type="password" 
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={(e) => setFormData({...formData, password: e.target.value})}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:ring-2 focus:ring-sanjeevni-500/50 transition-all placeholder:text-slate-600"
-              />
+              <div className="relative">
+                <input 
+                  type={showPassword ? "text" : "password"} 
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={(e) => setFormData({...formData, password: e.target.value})}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 pr-12 text-white focus:outline-none focus:ring-2 focus:ring-sanjeevni-500/50 transition-all placeholder:text-slate-600"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
             {error && (

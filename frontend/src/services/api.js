@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// const BASE_URL = 'http://localhost:8000/api';
-const BASE_URL = 'https://sanjeevni-9zgt.onrender.com/api';
+const BASE_URL = 'http://localhost:8000/api';
+// const BASE_URL = 'https://sanjeevni-9zgt.onrender.com/api';
 
 // --- AUTH TOKEN MANAGEMENT ---
 const API = axios.create({
@@ -139,6 +139,12 @@ export const api = {
   utility: {
     getNearbyHospitals: async (lat, lng) => {
       return API.get(`/hospitals/nearby?lat=${lat}&lng=${lng}`);
+    }
+  },
+
+  ml: {
+    predictNext7Days: async (hospital_id) => {
+      return axios.post('http://localhost:8001/predict_next_7_days', { hosp_id: hospital_id });
     }
   }
 };

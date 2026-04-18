@@ -7,6 +7,7 @@ const Inventory = () => {
   const { hospitalInfo, addNotification } = useSanjeevni();
   const [items, setItems] = useState([]);
   const [prediction, setPrediction] = useState(null);
+  const [rawMLData, setRawMLData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [showPrediction, setShowPrediction] = useState(true);
@@ -30,13 +31,62 @@ const Inventory = () => {
   };
 
   const fetchPrediction = async () => {
+    if (!hospitalInfo) return;
     try {
-      const res = await api.inventory.getByPrediction();
-      setPrediction(res.data);
+      const res = await api.ml.predictNext7Days(hospitalInfo.hospital_id);
+      setRawMLData(res.data);
     } catch (err) {
-      console.error(err);
+      console.error("ML Prediction Failed:", err);
     }
   };
+
+  useEffect(() => {
+    if (!rawMLData || !hospitalInfo) return;
+    
+    let total_patients = 0;
+    rawMLData.predictions.forEach(p => total_patients += p.predicted_patients);
+    
+    const risk_level = total_patients > 100 ? 'CRITICAL RISK' : total_patients > 50 ? 'ELEVATED' : 'NOMINAL';
+    const tr = rawMLData.total_resources_needed;
+    
+    const getCurrentQuantity = (searchTerms) => {
+      const found = items.find(i => searchTerms.some(term => i.name.toLowerCase().includes(term.toLowerCase())));
+      return found ? found.quantity : 0;
+    };
+
+    const makeRec = (name, need, fallbackCurrent) => {
+      let current = 0;
+      if (name === 'Ventilators') current = getCurrentQuantity(['ventilator']) || fallbackCurrent;
+      else if (name === 'Oxygen Units') current = getCurrentQuantity(['oxygen', 'o2', 'cylinder']) || fallbackCurrent;
+      else if (name === 'PPE Kits') current = getCurrentQuantity(['ppe', 'kit']) || fallbackCurrent;
+      else if (name === 'Masks') current = getCurrentQuantity(['mask', 'n95']) || fallbackCurrent;
+      else if (name === 'Doctors (Staff)') current = fallbackCurrent;
+
+      let gap = need - current;
+      if (gap < 0) gap = 0;
+      return {
+        name,
+        gap,
+        projected_need: need,
+        priority: gap > 10 ? 'critical' : gap > 0 ? 'warning' : 'safe'
+      };
+    };
+
+    const recs = [
+      makeRec('Ventilators', tr.ventilators, hospitalInfo.ventilators || 0),
+      makeRec('Oxygen Units', tr.oxygen_cylinders, hospitalInfo.oxygen_units || 0),
+      makeRec('PPE Kits', tr.ppe_kits, 10), 
+      makeRec('Masks', tr.masks, 50),
+      makeRec('Doctors (Staff)', tr.doctors, 2)
+    ];
+
+    setPrediction({
+      projected_surge: `${total_patients} Patients`,
+      risk_level,
+      timeframe: 'Next 7 Days',
+      recommendations: recs.filter(r => r.gap > 0)
+    });
+  }, [rawMLData, items, hospitalInfo]);
 
   const addItem = () => {
     setItems([...items, { name: '', category: 'supplies', quantity: 0, unit: 'units' }]);
