@@ -8,7 +8,7 @@
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-sanjeevnifrontend.vercel.app-blue?style=for-the-badge)](https://sanjeevnifrontend.vercel.app)
 [![Backend API](https://img.shields.io/badge/API-Render-brightgreen?style=for-the-badge)](https://sanjeevni-9zgt.onrender.com)
-[![ML Engine](https://img.shields.io/badge/ML%20Engine-FastAPI%20%2B%20Random%20Forest-orange?style=for-the-badge)](#)
+[![ML Engine](https://img.shields.io/badge/ML%20Engine-FastAPI%20%2B%20Random%20Forest-orange?style=for-the-badge)](https://github.com/Krishna-Vineet/Sanjeevni/tree/main/hospital_patient_prediction)
 
 </div>
 
@@ -41,6 +41,66 @@ Sanjeevni is a **Hospital Network Operating System** — a real-time coordinatio
 
 ---
 
+
+## 👥 Team & Contributions
+
+<div align="center">
+
+**Core Development Team — Sanjeevni**
+
+</div>
+
+---
+
+### 🧠 Rakesh Gupta —
+Machine Learning Engineer  
+🔗 https://github.com/Raakeshguptaa  
+
+**Contributions:**
+- Built and trained the Random Forest model for patient surge prediction  
+- Developed FastAPI microservice for ML inference  
+- Implemented prediction logic with lag features and growth control  
+- Optimized model performance and stability  
+
+---
+
+### ⚙️ Vineet Kumar Sahu —
+Backend Developer  
+🔗 https://github.com/Krishna-Vineet  
+
+**Contributions:**
+- Developed REST APIs using Node.js and Express  
+- Designed MongoDB schemas and handled database operations  
+- Implemented authentication using JWT and bcrypt  
+- Built transfer system, resource exchange, and hospital modules  
+
+---
+
+### 🖥️ Vikas Kumar —
+Frontend Developer  
+🔗 https://github.com/vikas-kumar004  
+
+**Contributions:**
+- Built UI using React, Vite, and Tailwind CSS  
+- Developed Dashboard, Transfer, and Resource pages  
+- Integrated APIs using Axios  
+- Managed routing and state for smooth UX  
+
+---
+
+### 🤖 Shivam Mishra —
+AI Doctor 
+🔗 https://github.com/Shivam-Mishra-2004  
+
+**Contributions:**
+- Implemented Smart Doctor using Gemini AI  
+- Designed AI interaction and prompt system  
+- Integrated AI into frontend interface  
+- Contributed to UI development  
+
+---
+
+
 ## 🏗️ System Architecture
 
 Sanjeevni is a **three-service, independently deployable** system:
@@ -49,15 +109,15 @@ Sanjeevni is a **three-service, independently deployable** system:
 ┌──────────────────────────────────────────────────────────────┐
 │                      SANJEEVNI NETWORK                       │
 │                                                              │
-│   ┌────────────────┐   ┌──────────────────┐   ┌──────────┐  │
-│   │   Frontend     │   │    Backend       │   │  ML      │  │
-│   │                │   │                  │   │  Engine  │  │
-│   │  React 19      │──►│  Node.js /       │   │          │  │
-│   │  Vite 8        │   │  Express 5       │   │  FastAPI │  │
-│   │  TailwindCSS 4 │◄──│  MongoDB         │   │  Python  │  │
-│   │  Framer Motion │   │  Mongoose        │   │  RF Model│  │
-│   │  Vercel        │   │  Render          │◄──│  :8001   │  │
-│   └────────────────┘   └──────────────────┘   └──────────┘  │
+│   ┌────────────────┐   ┌──────────────────┐   ┌──────────┐   │
+│   │   Frontend     │   │    Backend       │   │  ML      │   │
+│   │                │   │                  │   │  Engine  │   │
+│   │  React 19      │──►│  Node.js /       │   │          │   │
+│   │  Vite 8        │   │  Express 5       │   │  FastAPI │   │
+│   │  TailwindCSS 4 │◄──│  MongoDB         │   │  Python  │   │
+│   │  Framer Motion │   │  Mongoose        │   │  RF Model│   │
+│   │  Vercel        │   │  Render          │◄──│  :8001   │   │
+│   └────────────────┘   └──────────────────┘   └──────────┘   │
 └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -323,16 +383,6 @@ Sanjeevni/
 
 ---
 
-## 🔭 What's Next
-
-- [ ] WebSocket push for real-time Code Red alerts (replace 7s polling)
-- [ ] Live ambulance GPS tracking on transfer map
-- [ ] Admin super-panel for network-wide analytics
-- [ ] Retrain ML model on live MongoDB production data
-- [ ] Mobile PWA for field paramedics
-
----
-
 <div align="center">
 
 **Built with urgency. Designed for lives.**
@@ -340,3 +390,4 @@ Sanjeevni/
 *Sanjeevni — Because the next Code Red cannot wait.*
 
 </div>
+
